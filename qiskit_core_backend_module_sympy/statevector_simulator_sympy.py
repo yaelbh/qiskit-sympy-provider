@@ -129,7 +129,7 @@ class StatevectorSimulatorSympy(BaseBackend):
         'name': 'statevector_simulator_sympy',
         'url': 'https://github.com/QISKit/qiskit-sdk-py',
         'simulator': True,
-        'local': False,
+        'local': True,
         'description': 'A sympy-based statevector simulator',
         'coupling_map': 'all-to-all',
         'basis_gates': 'u1,u2,u3,cx,id'

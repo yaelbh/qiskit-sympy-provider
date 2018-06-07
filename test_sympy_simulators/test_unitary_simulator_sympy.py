@@ -29,7 +29,7 @@ from qiskit_core_backend_module_sympy.unitary_simulator_sympy import UnitarySimu
 
 
 class UnitarySimulatorSympyTest(QiskitTestCase):
-    """Test unitary simulator sympy."""
+    """Test local unitary simulator sympy."""
 
     def setUp(self):
         self.seed = 88
@@ -54,7 +54,7 @@ class UnitarySimulatorSympyTest(QiskitTestCase):
             'config': {
                 'max_credits': None,
                 'shots': 1,
-                'backend_name': 'sympy_unitary_simulator'
+                'backend_name': 'local_sympy_unitary_simulator'
             },
             'circuits': [
                 {

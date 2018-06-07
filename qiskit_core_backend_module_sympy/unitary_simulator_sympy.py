@@ -56,7 +56,7 @@ class UnitarySimulatorSympy(BaseBackend):
         'name': 'unitary_simulator_sympy',
         'url': 'https://github.com/QISKit/qiskit-sdk-py',
         'simulator': True,
-        'local': False,
+        'local': True,
         'description': 'A sympy simulator for unitary matrix',
         'coupling_map': 'all-to-all',
         'basis_gates': 'u1,u2,u3,cx,id'

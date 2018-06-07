@@ -29,7 +29,7 @@ from qiskit_core_backend_module_sympy.statevector_simulator_sympy import Stateve
 
 
 class StatevectorSimulatorSympyTest(QiskitTestCase):
-    """Test statevector simulator."""
+    """Test local statevector simulator."""
 
     def setUp(self):
         self.qasm_filename = self._get_resource_path('qasm/simple.qasm')
@@ -48,7 +48,7 @@ class StatevectorSimulatorSympyTest(QiskitTestCase):
                      'config': {
                          'max_credits': resources['max_credits'],
                          'shots': 1024,
-                         'backend_name': 'statevector_simulator_sympy',
+                         'backend_name': 'local_statevector_simulator_sympy',
                      },
                      'circuits': [
                          {
