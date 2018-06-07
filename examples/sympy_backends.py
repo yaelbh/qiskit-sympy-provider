@@ -21,7 +21,7 @@ amplitudes.
 """
 
 import os
-from qiskit_core_backend_module_sympy import StatevectorSimulatorSympy, UnitarySimulatorSympy
+from qiskit_addon_sympy import StatevectorSimulatorSympy, UnitarySimulatorSympy
 from qiskit import execute, load_qasm_file
 
 

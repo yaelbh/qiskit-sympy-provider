@@ -7,7 +7,7 @@ This module contains [QISKit](https://www.qiskit.org/) simulators whose backends
 Install this module via the PIP tool:
 
 ```
-pip install qiskit_core_backend_module_sympy
+pip install qiskit_addon_sympy
 ```
 
 PIP will handle all dependencies automatically.

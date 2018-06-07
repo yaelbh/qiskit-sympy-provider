@@ -18,13 +18,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="qiskit_core_backend_module_sympy",
+    name="qiskit_addon_sympy",
     version="0.1.0",
     author="QISKit Development Team",
     author_email="qiskit@us.ibm.com",
     description="QISKit statevector simulators whose backends are written in Sympy",
     long_description = "This module contains [QISKit](https://www.qiskit.org/) simulators whose backends are written in Sympy. These simulators simulate a Quantum circuit on a classical computer.",
-    url="https://github.com/QISKit/qiskit_core_backend_module_sympy",
+    url="https://github.com/QISKit/qiskit_addon_sympy",
     license="Apache 2.0",
     classifiers=[
         "Environment :: Console",

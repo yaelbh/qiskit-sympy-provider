@@ -34,7 +34,7 @@ ECHO.
 GOTO :end
 
 :lint
-pylint -rn qiskit_core_backend_module_sympy test_sympy
+pylint -rn qiskit_addon_sympy test_sympy
 IF errorlevel 9009 GOTO :error
 GOTO :next
 
