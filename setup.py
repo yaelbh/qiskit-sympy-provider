@@ -15,18 +15,15 @@
 # limitations under the License.
 # =============================================================================
 
-import setuptools
+from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-
-setuptools.setup(
+setup(
     name="qiskit_core_backend_module_sympy",
-    version="0.0.3",
+    version="0.1.0",
     author="QISKit Development Team",
     author_email="qiskit@us.ibm.com",
     description="QISKit statevector simulators whose backends are written in Sympy",
-    long_description = "This module contains [QISKit](https://www.qiskit.org/) simulators whose backends are written in Sympy. These simulators simulate a Qunatum circuit on a classical computer."
+    long_description = "This module contains [QISKit](https://www.qiskit.org/) simulators whose backends are written in Sympy. These simulators simulate a Quantum circuit on a classical computer.",
     url="https://github.com/QISKit/qiskit_core_backend_module_sympy",
     license="Apache 2.0",
     classifiers=[
@@ -43,7 +40,7 @@ setuptools.setup(
     ],
     install_requires=['qiskit>=0.5'],
     keywords="qiskit quantum sympy simulator",
-    packages=setuptools.find_packages(exclude=['test*']),
+    packages=find_packages(exclude=['test*']),
     include_package_data=True,
     python_requires=">=3.5"
 )

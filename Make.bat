@@ -34,12 +34,12 @@ ECHO.
 GOTO :end
 
 :lint
-pylint -rn qiskit_core_backend_module_sympy test_sympy_simulators
+pylint -rn qiskit_core_backend_module_sympy test_sympy
 IF errorlevel 9009 GOTO :error
 GOTO :next
 
 :test
-python -m unittest discover -s test_sympy_simulators -v
+python -m unittest discover -s test_sympy -v
 IF errorlevel 9009 GOTO :error
 GOTO :next
 

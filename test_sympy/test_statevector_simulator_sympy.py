@@ -25,7 +25,7 @@ from sympy import sqrt
 
 from qiskit import (qasm, unroll, QuantumProgram, QuantumJob, QuantumRegister,
                     ClassicalRegister, QuantumCircuit, wrapper)
-from qiskit_core_backend_module_sympy.statevector_simulator_sympy import StatevectorSimulatorSympy
+from qiskit_core_backend_module_sympy import StatevectorSimulatorSympy
 
 
 class StatevectorSimulatorSympyTest(QiskitTestCase):

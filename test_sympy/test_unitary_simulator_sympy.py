@@ -25,7 +25,7 @@ from sympy import sqrt
 
 from qiskit import (qasm, unroll, QuantumProgram, QuantumJob, QuantumRegister,
                     ClassicalRegister, QuantumCircuit, wrapper)
-from qiskit_core_backend_module_sympy.unitary_simulator_sympy import UnitarySimulatorSympy
+from qiskit_core_backend_module_sympy import UnitarySimulatorSympy
 
 
 class UnitarySimulatorSympyTest(QiskitTestCase):

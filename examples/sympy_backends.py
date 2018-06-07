@@ -21,8 +21,7 @@ amplitudes.
 """
 
 import os
-from qiskit_core_backend_module_sympy.statevector_simulator_sympy import StatevectorSimulatorSympy
-from qiskit_core_backend_module_sympy.unitary_simulator_sympy import UnitarySimulatorSympy
+from qiskit_core_backend_module_sympy import StatevectorSimulatorSympy, UnitarySimulatorSympy
 from qiskit import execute, load_qasm_file
 
 
@@ -30,12 +29,12 @@ def use_sympy_backends():
     q_circuit = load_qasm_file('simple.qasm')
    
     # sympy statevector simulator
-    result = execute(q_circuit, backend=StatevectorSimulatorSympy()).result()
+    result = execute(q_circuit, backend=StatevectorSimulatorSympy(), shots=1).result()
     print("final quantum amplitude vector: ")
     print(result.get_data(q_circuit)['statevector'])
 
     # sympy unitary simulator
-    result = execute([q_circuit], backend=UnitarySimulatorSympy()).result()
+    result = execute([q_circuit], backend=UnitarySimulatorSympy(), shots=1).result()
     print("\nunitary matrix of the circuit: ")
     print(result.get_data(q_circuit)['unitary'])
 
