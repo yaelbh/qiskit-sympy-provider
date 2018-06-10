@@ -53,7 +53,7 @@ class UnitarySimulatorSympy(BaseBackend):
     """Sympy implementation of a unitary simulator."""
 
     DEFAULT_CONFIGURATION = {
-        'name': 'unitary_simulator_sympy',
+        'name': 'local_unitary_simulator_sympy',
         'url': 'https://github.com/QISKit/qiskit-sdk-py',
         'simulator': True,
         'local': True,

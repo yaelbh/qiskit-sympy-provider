@@ -126,7 +126,7 @@ class StatevectorSimulatorSympy(BaseBackend):
     """Sympy implementation of a statevector simulator."""
 
     DEFAULT_CONFIGURATION = {
-        'name': 'statevector_simulator_sympy',
+        'name': 'local_statevector_simulator_sympy',
         'url': 'https://github.com/QISKit/qiskit-sdk-py',
         'simulator': True,
         'local': True,
