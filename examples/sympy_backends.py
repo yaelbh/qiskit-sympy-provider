@@ -20,23 +20,23 @@ Example use of the symbolic simulator backends, which keep precise forms of
 amplitudes.
 """
 
-import os
 from qiskit_addon_sympy import StatevectorSimulatorSympy, UnitarySimulatorSympy
 from qiskit import execute, load_qasm_file
 
 
 def use_sympy_backends():
+    """ Usage examples for the Sympy simulators """
     q_circuit = load_qasm_file('simple.qasm')
-   
+
     # sympy statevector simulator
-    result = execute(q_circuit, backend=StatevectorSimulatorSympy(), shots=1).result()
+    result = execute(q_circuit, backend=StatevectorSimulatorSympy()).result()
     print("final quantum amplitude vector: ")
-    print(result.get_data(q_circuit)['statevector'])
+    print(result.get_statevector(q_circuit))
 
     # sympy unitary simulator
-    result = execute([q_circuit], backend=UnitarySimulatorSympy(), shots=1).result()
+    result = execute([q_circuit], backend=UnitarySimulatorSympy()).result()
     print("\nunitary matrix of the circuit: ")
-    print(result.get_data(q_circuit)['unitary'])
+    print(result.get_unitary(q_circuit))
 
 if __name__ == "__main__":
     use_sympy_backends()
