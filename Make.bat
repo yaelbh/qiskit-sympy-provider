@@ -24,12 +24,12 @@ ECHO.
 GOTO :end
 
 :lint
-pylint -rn qiskit_addon_sympy test_sympy
+pylint -rn qiskit_addon_sympy test
 IF errorlevel 9009 GOTO :error
 GOTO :next
 
 :test
-python -m unittest discover -s test_sympy -v
+python -m unittest discover -v
 IF errorlevel 9009 GOTO :error
 GOTO :next
 

@@ -6,15 +6,15 @@
 
 # Ignoring generated ones with .py extension.
 lint:
-	pylint -rn qiskit_addon_sympy test_sympy
+	pylint -rn qiskit_addon_sympy test
 
 style:
-	pycodestyle --max-line-length=100 qiskit_addon_sympy test_sympy
+	pycodestyle --max-line-length=100 qiskit_addon_sympy test
 
 # Use the -s (starting directory) flag for "unittest discover" is necessary,
 # otherwise the QuantumCircuit header will be modified during the discovery.
 test:
-	python3 -m unittest discover -s test_sympy -v
+	python3 -m unittest discover -v
 
 profile:
 	python3 -m unittest discover -p "profile*.py" -v
