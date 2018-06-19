@@ -5,7 +5,11 @@
 # This source code is licensed under the Apache License, Version 2.0 found in
 # the LICENSE.txt file in the root directory of this source tree.
 
-"""QISKit Sympy simulators unit tests."""
+"""
+QISKit Sympy simulators unit tests.
+Note: see Issue #4 - this file is temporary;
+      common.py in qiskit-core will move to a location which is included in the pip package.
+"""
 
 import os
 
