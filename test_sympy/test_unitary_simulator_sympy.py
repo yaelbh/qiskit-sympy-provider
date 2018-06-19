@@ -13,7 +13,7 @@ import unittest
 
 from sympy import sqrt
 
-from qiskit import (qasm, unroll, QuantumProgram, QuantumJob, QuantumRegister,
+from qiskit import (load_qasm_file, execute, QuantumRegister,
                     ClassicalRegister, QuantumCircuit, wrapper)
 from qiskit_addon_sympy import UnitarySimulatorSympy
 
@@ -22,51 +22,14 @@ class UnitarySimulatorSympyTest(QiskitTestCase):
     """Test local unitary simulator sympy."""
 
     def setUp(self):
-        self.seed = 88
         self.qasm_filename = self._get_resource_path('qasm/simple.qasm')
-        self.qp = QuantumProgram()
+        self.q_circuit = load_qasm_file(self.qasm_filename)
 
     def test_unitary_simulator(self):
         """test generation of circuit unitary"""
-        self.qp.load_qasm_file(self.qasm_filename, name='example')
-        basis_gates = []  # unroll to base gates
-        unroller = unroll.Unroller(
-            qasm.Qasm(data=self.qp.get_qasm('example')).parse(),
-            unroll.JsonBackend(basis_gates))
-        circuit = unroller.execute()
-        # strip measurements from circuit to avoid warnings
-        circuit['operations'] = [op for op in circuit['operations']
-                                 if op['name'] != 'measure']
-        # the simulator is expecting a JSON format, so we need to convert it
-        # back to JSON
-        qobj = {
-            'id': 'unitary',
-            'config': {
-                'max_credits': None,
-                'shots': 1,
-                'backend_name': 'local_sympy_unitary_simulator'
-            },
-            'circuits': [
-                {
-                    'name': 'test',
-                    'compiled_circuit': circuit,
-                    'compiled_circuit_qasm': self.qp.get_qasm('example'),
-                    'config': {
-                        'coupling_map': None,
-                        'basis_gates': None,
-                        'layout': None,
-                        'seed': None
-                    }
-                }
-            ]
-        }
 
-        q_job = QuantumJob(qobj,
-                           backend=UnitarySimulatorSympy(),
-                           preformatted=True)
-
-        result = UnitarySimulatorSympy().run(q_job).result()
-        actual = result.get_data('test')['unitary']
+        result = execute(self.q_circuit, backend=UnitarySimulatorSympy()).result()
+        actual = result.get_unitary(self.q_circuit)
 
         self.assertEqual(actual[0][0], sqrt(2)/2)
         self.assertEqual(actual[0][1], sqrt(2)/2)

@@ -13,7 +13,7 @@ import unittest
 
 from sympy import sqrt
 
-from qiskit import (qasm, unroll, QuantumProgram, QuantumJob, QuantumRegister,
+from qiskit import (load_qasm_file, execute, QuantumRegister,
                     ClassicalRegister, QuantumCircuit, wrapper)
 from qiskit_addon_sympy import StatevectorSimulatorSympy
 
@@ -23,40 +23,12 @@ class StatevectorSimulatorSympyTest(QiskitTestCase):
 
     def setUp(self):
         self.qasm_filename = self._get_resource_path('qasm/simple.qasm')
-        self.qp = QuantumProgram()
-        self.qp.load_qasm_file(self.qasm_filename, name='example')
-        basis_gates = []  # unroll to base gates
-        unroller = unroll.Unroller(
-            qasm.Qasm(data=self.qp.get_qasm('example')).parse(),
-            unroll.JsonBackend(basis_gates))
-        circuit = unroller.execute()
-        circuit_config = {'coupling_map': None,
-                          'basis_gates': 'u1,u2,u3,cx,id',
-                          'layout': None}
-        resources = {'max_credits': 3}
-        self.qobj = {'id': 'test_sim_single_shot',
-                     'config': {
-                         'max_credits': resources['max_credits'],
-                         'backend_name': 'local_statevector_simulator_sympy'
-                     },
-                     'circuits': [
-                         {
-                             'name': 'test',
-                             'compiled_circuit': circuit,
-                             'compiled_circuit_qasm': None,
-                             'config': circuit_config
-                         }
-                     ]}
-        self.q_job = QuantumJob(self.qobj,
-                                backend=StatevectorSimulatorSympy(),
-                                circuit_config=circuit_config,
-                                resources=resources,
-                                preformatted=True)
+        self.q_circuit = load_qasm_file(self.qasm_filename)
 
     def test_statevector_simulator_sympy(self):
         """Test final state vector for single circuit run."""
-        result = StatevectorSimulatorSympy().run(self.q_job).result()
-        actual = result.get_data('test')['statevector']
+        result = execute(self.q_circuit, backend=StatevectorSimulatorSympy()).result()
+        actual = result.get_statevector(self.q_circuit)
         self.assertEqual(result.get_status(), 'COMPLETED')
         self.assertEqual(actual[0], sqrt(2)/2)
         self.assertEqual(actual[1], 0)
