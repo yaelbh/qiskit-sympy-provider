@@ -37,8 +37,7 @@ class StatevectorSimulatorSympyTest(QiskitTestCase):
         self.qobj = {'id': 'test_sim_single_shot',
                      'config': {
                          'max_credits': resources['max_credits'],
-                         'shots': 1024,
-                         'backend_name': 'local_statevector_simulator_sympy',
+                         'backend_name': 'local_statevector_simulator_sympy'
                      },
                      'circuits': [
                          {
@@ -55,7 +54,7 @@ class StatevectorSimulatorSympyTest(QiskitTestCase):
                                 preformatted=True)
 
     def test_statevector_simulator_sympy(self):
-        """Test data counts output for single circuit run against reference."""
+        """Test final state vector for single circuit run."""
         result = StatevectorSimulatorSympy().run(self.q_job).result()
         actual = result.get_data('test')['statevector']
         self.assertEqual(result.get_status(), 'COMPLETED')

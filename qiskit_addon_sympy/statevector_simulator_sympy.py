@@ -180,10 +180,8 @@ class StatevectorSimulatorSympy(BaseBackend):
                         }]
         """
         qobj = q_job.qobj
+        self._validate(qobj)
         result_list = []
-        shots = qobj['config']['shots']
-        if shots > 1:
-            logger.info("No need for multiple shots. A single execution will be performed.")
         for circuit in qobj['circuits']:
             result_list.append(self.run_circuit(circuit))
         return Result({'job_id': q_job.job_id, 'result': result_list,
@@ -326,3 +324,31 @@ class StatevectorSimulatorSympy(BaseBackend):
                 return CGate(qid_tuple[0], ugate)
         # if the control flow comes here,  alarm!
         raise Exception('Not supported')
+
+    # TODO: Remove duplication between files in statevector_simulator_*.py:
+    #       methods _validate and _set_shots_to_1
+    def _validate(self, qobj):
+        """Semantic validations of the qobj which cannot be done via schemas.
+        Some of these may later move to backend schemas.
+
+        1. No shots
+        2. No measurements in the middle
+        """
+        self._set_shots_to_1(qobj, False)
+        for circuit in qobj['circuits']:
+            self._set_shots_to_1(circuit, True)
+            for operator in circuit['compiled_circuit']['operations']:
+                if operator['name'] in ['measure', 'reset']:
+                    raise SimulatorError("In circuit {}: statevector simulator does "
+                                         "not support measure or reset.".format(circuit['name']))
+
+    def _set_shots_to_1(self, dictionary, include_name):
+        if 'config' not in dictionary:
+            dictionary['config'] = {}
+        if 'shots' in dictionary['config'] and dictionary['config']['shots'] != 1:
+            warn = 'statevector simulator only supports 1 shot. Setting shots=1'
+            if include_name:
+                warn += 'Setting shots=1 for circuit' + dictionary['name']
+            warn += '.'
+            logger.warning(warn)
+        dictionary['config']['shots'] = 1
