@@ -350,5 +350,5 @@ class StatevectorSimulatorSympy(BaseBackend):
             if include_name:
                 warn += 'Setting shots=1 for circuit' + dictionary['name']
             warn += '.'
-            logger.warning(warn)
+            logger.info(warn)
         dictionary['config']['shots'] = 1
