@@ -1,6 +1,6 @@
 # QISKit simulators based on Sympy
 
-This module contains [QISKit](https://www.qiskit.org/) simulators whose backends are written in Sympy. These simulators simulate a quantum circuit on a classical computer.
+This module contains [QISKit](https://www.qiskit.org/) simulators with Sympy backends. The simulators simulate a quantum circuit on a classical computer.
 
 ## Installation
 

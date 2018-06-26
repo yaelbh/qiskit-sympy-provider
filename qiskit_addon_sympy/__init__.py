@@ -9,5 +9,6 @@
 
 from .statevector_simulator_sympy import StatevectorSimulatorSympy
 from .unitary_simulator_sympy import UnitarySimulatorSympy
+from .sympyprovider import SympyProvider
 
 __version__ = '0.1.0'
