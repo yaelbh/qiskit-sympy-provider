@@ -24,7 +24,7 @@ Warning: it is slow.
 """
 import logging
 import uuid
-
+import time
 import numpy as np
 from sympy import Matrix, pi
 from sympy.matrices import eye, zeros
@@ -43,8 +43,8 @@ class UnitarySimulatorSympy(BaseBackend):
     """Sympy implementation of a unitary simulator."""
 
     DEFAULT_CONFIGURATION = {
-        'name': 'local_unitary_simulator_sympy',
-        'url': 'https://github.com/QISKit/qiskit-sdk-py',
+        'name': 'sympy_unitary_simulator',
+        'url': 'https://github.com/QISKit/qiskit-addon-sympy',
         'simulator': True,
         'local': True,
         'description': 'A sympy simulator for unitary matrix',
@@ -166,22 +166,24 @@ class UnitarySimulatorSympy(BaseBackend):
         unitaty_add = self.enlarge_two_opt_sympy(gate, qubit0, qubit1, self._number_of_qubits)
         self._unitary_state = unitaty_add*self._unitary_state
 
-    def run(self, q_job):
-        """Run q_job asynchronously.
+    def run(self, qobj):
+        """Run qobj asynchronously.
 
         Args:
-            q_job (QuantumJob): QuantumJob object
+            qobj (dict): job description
 
         Returns:
             LocalJob: derived from BaseJob
         """
-        return LocalJob(self._run_job, q_job)
+        return LocalJob(self._run_job, qobj)
 
-    def _run_job(self, q_job):
-        """Run q_job
+    def _run_job(self, qobj):
+        """Run qobj
 
         Args:
-            q_job (QuantumJob): job to run
+            qobj (dict): all the information necessary
+                (e.g., circuit, backend and resources) for running a circuit
+
         Returns:
             Result: Result is a class including the information to be returned to users.
             Specifically, result_list in the return looks is important and it like this::
@@ -195,13 +197,20 @@ class UnitarySimulatorSympy(BaseBackend):
                     'status': 'DONE'}
                 ]
         """
-        qobj = q_job.qobj
         result_list = []
+        start = time.time()
         for circuit in qobj['circuits']:
             result_list.append(self.run_circuit(circuit))
+        end = time.time()
         job_id = str(uuid.uuid4())
-        return Result({'job_id': job_id, 'result': result_list,
-                       'status': 'COMPLETED'}, qobj)
+        result = {'backend': self._configuration['name'],
+                  'id': qobj['id'],
+                  'job_id': job_id,
+                  'result': result_list,
+                  'status': 'COMPLETED',
+                  'success': True,
+                  'time_taken': (end - start)}
+        return Result(result)
 
     def run_circuit(self, circuit):
         """Run a circuit and return the results.

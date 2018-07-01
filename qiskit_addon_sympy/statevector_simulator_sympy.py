@@ -45,6 +45,7 @@ If you specify multiple shots, it will automatically set shots=1.
 
 import logging
 import uuid
+import time
 import numpy as np
 from sympy import Matrix, pi, I, exp
 from sympy import re, im
@@ -118,8 +119,8 @@ class StatevectorSimulatorSympy(BaseBackend):
     """Sympy implementation of a statevector simulator."""
 
     DEFAULT_CONFIGURATION = {
-        'name': 'local_statevector_simulator_sympy',
-        'url': 'https://github.com/QISKit/qiskit-sdk-py',
+        'name': 'sympy_statevector_simulator',
+        'url': 'https://github.com/QISKit/qiskit-addon-sympy',
         'simulator': True,
         'local': True,
         'description': 'A sympy-based statevector simulator',
@@ -148,23 +149,22 @@ class StatevectorSimulatorSympy(BaseBackend):
         """
         return im(com)**2 + re(com)**2
 
-    def run(self, q_job):
-        """Run q_job asynchronously.
+    def run(self, qobj):
+        """Run qobj asynchronously.
 
         Args:
-            q_job (QuantumJob): QuantumJob object
+            qobj (dict): job description
 
         Returns:
             LocalJob: derived from BaseJob
         """
-        q_job.job_id = str(uuid.uuid4())
-        return LocalJob(self._run_job, q_job)
+        return LocalJob(self._run_job, qobj)
 
-    def _run_job(self, q_job):
-        """Run circuits in q_job and return the result
+    def _run_job(self, qobj):
+        """Run circuits in qobj and return the result
 
             Args:
-                q_job (QuantumJob): all the information necessary
+                qobj (dict): all the information necessary
                     (e.g., circuit, backend and resources) for running a circuit
 
             Returns:
@@ -179,13 +179,21 @@ class StatevectorSimulatorSympy(BaseBackend):
                         'status': 'DONE'
                         }]
         """
-        qobj = q_job.qobj
         self._validate(qobj)
         result_list = []
+        start = time.time()
         for circuit in qobj['circuits']:
             result_list.append(self.run_circuit(circuit))
-        return Result({'job_id': q_job.job_id, 'result': result_list,
-                       'status': 'COMPLETED'}, qobj)
+        end = time.time()
+        job_id = str(uuid.uuid4())
+        result = {'backend': self._configuration['name'],
+                  'id': qobj['id'],
+                  'job_id': job_id,
+                  'result': result_list,
+                  'status': 'COMPLETED',
+                  'success': True,
+                  'time_taken': (end - start)}
+        return Result(result)
 
     def run_circuit(self, circuit):
         """Run a circuit and return object.
