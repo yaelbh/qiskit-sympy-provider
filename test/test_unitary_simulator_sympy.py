@@ -13,9 +13,6 @@ import unittest
 
 from sympy import sqrt
 
-# The following import will be replaced by an import of register
-# once register is written
-from qiskit.wrapper._wrapper import _DEFAULT_PROVIDER
 from qiskit import (load_qasm_file, execute, QuantumRegister,
                     ClassicalRegister, QuantumCircuit, wrapper)
 from qiskit_addon_sympy import SympyProvider
@@ -25,9 +22,7 @@ class UnitarySimulatorSympyTest(QiskitSympyTestCase):
     """Test local unitary simulator sympy."""
 
     def setUp(self):
-        # The following lines will be replaced by a usage of register
-        provider = SympyProvider()
-        _DEFAULT_PROVIDER.add_provider(provider)
+        wrapper.register(provider_class=SympyProvider)
 
         self.qasm_filename = self._get_resource_path('simple.qasm')
         self.q_circuit = load_qasm_file(self.qasm_filename)
@@ -35,7 +30,7 @@ class UnitarySimulatorSympyTest(QiskitSympyTestCase):
     def test_unitary_simulator(self):
         """test generation of circuit unitary"""
 
-        result = execute(self.q_circuit, backend='local_unitary_simulator_sympy').result()
+        result = execute(self.q_circuit, backend='sympy_unitary_simulator').result()
         actual = result.get_unitary(self.q_circuit)
 
         self.assertEqual(actual[0][0], sqrt(2)/2)
@@ -60,9 +55,7 @@ class TestQobj(QiskitSympyTestCase):
     """Check the objects compiled for this backend create names properly"""
 
     def setUp(self):
-        # The following lines will be replaced by a usage of register
-        provider = SympyProvider()
-        _DEFAULT_PROVIDER.add_provider(provider)
+        wrapper.register(provider_class=SympyProvider)
 
         qr = QuantumRegister(2, name="qr2")
         cr = ClassicalRegister(2, name=None)
@@ -74,7 +67,7 @@ class TestQobj(QiskitSympyTestCase):
         self.circuits = [qc]
 
     def test_qobj_unitary_simulator_sympy(self):
-        qobj = wrapper.compile(self.circuits, backend='local_unitary_simulator_sympy')
+        qobj = wrapper.compile(self.circuits, backend='sympy_unitary_simulator')
         cc = qobj['circuits'][0]['compiled_circuit']
         ccq = qobj['circuits'][0]['compiled_circuit_qasm']
         self.assertIn(self.qr_name, map(lambda x: x[0], cc['header']['qubit_labels']))

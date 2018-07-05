@@ -260,7 +260,7 @@ class StatevectorSimulatorSympy(BaseBackend):
             'statevector': np.asarray(list_form),
         }
 
-        return {'data': data, 'status': 'DONE'}
+        return {'name': circuit['name'], 'data': data, 'status': 'DONE'}
 
     @staticmethod
     def get_sym_op(name, qid_tuple, params=None):

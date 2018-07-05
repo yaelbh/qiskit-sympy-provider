@@ -263,4 +263,6 @@ class UnitarySimulatorSympy(BaseBackend):
                 return result
         result['data']['unitary'] = np.array(self._unitary_state)
         result['status'] = 'DONE'
+        result['name'] = circuit['name']
+
         return result
