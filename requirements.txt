@@ -1,2 +1,2 @@
-qiskit>=0.5
+qiskit>=0.5.5
 sympy>=1.0
