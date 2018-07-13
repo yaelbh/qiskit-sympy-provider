@@ -8,8 +8,8 @@
 """Provider for local Sympy backends."""
 
 from qiskit.backends import BaseProvider
-from .statevector_simulator_sympy import StatevectorSimulatorSympy
-from .unitary_simulator_sympy import UnitarySimulatorSympy
+from .sympy_statevector_simulator import SympyStatevectorSimulator
+from .sympy_unitary_simulator import SympyUnitarySimulator
 
 
 class SympyProvider(BaseProvider):
@@ -19,8 +19,8 @@ class SympyProvider(BaseProvider):
         super().__init__(args, kwargs)
 
         # Populate the list of local Sympy backends.
-        statevector_simulator = StatevectorSimulatorSympy()
-        unitary_simulator = UnitarySimulatorSympy()
+        statevector_simulator = SympyStatevectorSimulator()
+        unitary_simulator = SympyUnitarySimulator()
         self.backends = {statevector_simulator.name: statevector_simulator,
                          unitary_simulator.name: unitary_simulator}
 

@@ -39,7 +39,7 @@ from qiskit.backends.local._simulatorerror import SimulatorError
 logger = logging.getLogger(__name__)
 
 
-class UnitarySimulatorSympy(BaseBackend):
+class SympyUnitarySimulator(BaseBackend):
     """Sympy implementation of a unitary simulator."""
 
     DEFAULT_CONFIGURATION = {
@@ -53,7 +53,7 @@ class UnitarySimulatorSympy(BaseBackend):
     }
 
     def __init__(self, configuration=None):
-        """Initialize the UnitarySimulatorSympy object."""
+        """Initialize the SympyUnitarySimulator object."""
         super().__init__(configuration or self.DEFAULT_CONFIGURATION.copy())
 
         self._unitary_state = None
@@ -247,7 +247,7 @@ class UnitarySimulatorSympy(BaseBackend):
                 else:
                     params = None
                 qubit = operation['qubits'][0]
-                gate = UnitarySimulatorSympy.compute_ugate_matrix_wrap(params)
+                gate = SympyUnitarySimulator.compute_ugate_matrix_wrap(params)
                 self._add_unitary_single(gate, qubit)
             elif operation['name'] in ['id']:
                 logger.info('Identity gate is ignored by sympy-based unitary simulator.')

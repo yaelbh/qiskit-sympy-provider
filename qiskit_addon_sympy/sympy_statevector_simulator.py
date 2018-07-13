@@ -115,7 +115,7 @@ class UGateGeneric(OneQubitGate):
         return self._u_mat
 
 
-class StatevectorSimulatorSympy(BaseBackend):
+class SympyStatevectorSimulator(BaseBackend):
     """Sympy implementation of a statevector simulator."""
 
     DEFAULT_CONFIGURATION = {
@@ -129,7 +129,7 @@ class StatevectorSimulatorSympy(BaseBackend):
     }
 
     def __init__(self, configuration=None):
-        """Initialize the StatevectorSimulatorSympy object.
+        """Initialize the SympyStatevectorSimulator object.
 
         Args:
             configuration (dict): backend configuration
@@ -228,7 +228,7 @@ class StatevectorSimulatorSympy(BaseBackend):
                 qubit = operation['qubits'][0]
                 opname = operation['name'].upper()
                 opparas = operation['params']
-                _sym_op = StatevectorSimulatorSympy.get_sym_op(opname, tuple([qubit]), opparas)
+                _sym_op = SympyStatevectorSimulator.get_sym_op(opname, tuple([qubit]), opparas)
                 _applied_statevector = _sym_op * self._statevector
                 self._statevector = qapply(_applied_statevector)
             elif operation['name'] in ['id']:
@@ -244,7 +244,7 @@ class StatevectorSimulatorSympy(BaseBackend):
                 else:
                     opparas = None
                 q0q1tuple = tuple([qubit0, qubit1])
-                _sym_op = StatevectorSimulatorSympy.get_sym_op(opname, q0q1tuple, opparas)
+                _sym_op = SympyStatevectorSimulator.get_sym_op(opname, q0q1tuple, opparas)
                 self._statevector = qapply(_sym_op * self._statevector)
             else:
                 backend = globals()['__configuration']['name']

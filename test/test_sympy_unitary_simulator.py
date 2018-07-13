@@ -18,8 +18,8 @@ from qiskit import (load_qasm_file, execute, QuantumRegister,
 from qiskit_addon_sympy import SympyProvider
 
 
-class StatevectorSimulatorSympyTest(QiskitSympyTestCase):
-    """Test local statevector simulator."""
+class SympyUnitarySimulatorTest(QiskitSympyTestCase):
+    """Test local unitary simulator sympy."""
 
     def setUp(self):
         wrapper.register(provider_class=SympyProvider)
@@ -27,16 +27,28 @@ class StatevectorSimulatorSympyTest(QiskitSympyTestCase):
         self.qasm_filename = self._get_resource_path('simple.qasm')
         self.q_circuit = load_qasm_file(self.qasm_filename)
 
-    def test_statevector_simulator_sympy(self):
-        """Test final state vector for single circuit run."""
-        result = execute(self.q_circuit, backend='sympy_statevector_simulator').result()
-        actual = result.get_statevector(self.q_circuit)
+    def test_unitary_simulator(self):
+        """test generation of circuit unitary"""
 
-        self.assertEqual(result.get_status(), 'COMPLETED')
-        self.assertEqual(actual[0], sqrt(2)/2)
-        self.assertEqual(actual[1], 0)
-        self.assertEqual(actual[2], 0)
-        self.assertEqual(actual[3], sqrt(2)/2)
+        result = execute(self.q_circuit, backend='sympy_unitary_simulator').result()
+        actual = result.get_unitary(self.q_circuit)
+
+        self.assertEqual(actual[0][0], sqrt(2)/2)
+        self.assertEqual(actual[0][1], sqrt(2)/2)
+        self.assertEqual(actual[0][2], 0)
+        self.assertEqual(actual[0][3], 0)
+        self.assertEqual(actual[1][0], 0)
+        self.assertEqual(actual[1][1], 0)
+        self.assertEqual(actual[1][2], sqrt(2)/2)
+        self.assertEqual(actual[1][3], -sqrt(2)/2)
+        self.assertEqual(actual[2][0], 0)
+        self.assertEqual(actual[2][1], 0)
+        self.assertEqual(actual[2][2], sqrt(2)/2)
+        self.assertEqual(actual[2][3], sqrt(2)/2)
+        self.assertEqual(actual[3][0], sqrt(2)/2)
+        self.assertEqual(actual[3][1], -sqrt(2)/2)
+        self.assertEqual(actual[3][2], 0)
+        self.assertEqual(actual[3][3], 0)
 
 
 class TestQobj(QiskitSympyTestCase):
@@ -54,8 +66,8 @@ class TestQobj(QiskitSympyTestCase):
         self.cr_name = cr.name
         self.circuits = [qc]
 
-    def test_qobj_statevector_simulator_sympy(self):
-        qobj = wrapper.compile(self.circuits, backend='sympy_statevector_simulator')
+    def test_qobj_sympy_unitary_simulator(self):
+        qobj = wrapper.compile(self.circuits, backend='sympy_unitary_simulator')
         cc = qobj['circuits'][0]['compiled_circuit']
         ccq = qobj['circuits'][0]['compiled_circuit_qasm']
         self.assertIn(self.qr_name, map(lambda x: x[0], cc['header']['qubit_labels']))
