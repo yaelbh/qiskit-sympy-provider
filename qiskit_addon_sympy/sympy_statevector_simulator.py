@@ -45,6 +45,7 @@ If you specify multiple shots, it will automatically set shots=1.
 
 import logging
 import uuid
+import time
 import numpy as np
 from sympy import Matrix, pi, I, exp
 from sympy import re, im
@@ -114,12 +115,12 @@ class UGateGeneric(OneQubitGate):
         return self._u_mat
 
 
-class StatevectorSimulatorSympy(BaseBackend):
+class SympyStatevectorSimulator(BaseBackend):
     """Sympy implementation of a statevector simulator."""
 
     DEFAULT_CONFIGURATION = {
-        'name': 'local_statevector_simulator_sympy',
-        'url': 'https://github.com/QISKit/qiskit-sdk-py',
+        'name': 'sympy_statevector_simulator',
+        'url': 'https://github.com/QISKit/qiskit-addon-sympy',
         'simulator': True,
         'local': True,
         'description': 'A sympy-based statevector simulator',
@@ -128,7 +129,7 @@ class StatevectorSimulatorSympy(BaseBackend):
     }
 
     def __init__(self, configuration=None):
-        """Initialize the StatevectorSimulatorSympy object.
+        """Initialize the SympyStatevectorSimulator object.
 
         Args:
             configuration (dict): backend configuration
@@ -148,23 +149,22 @@ class StatevectorSimulatorSympy(BaseBackend):
         """
         return im(com)**2 + re(com)**2
 
-    def run(self, q_job):
-        """Run q_job asynchronously.
+    def run(self, qobj):
+        """Run qobj asynchronously.
 
         Args:
-            q_job (QuantumJob): QuantumJob object
+            qobj (dict): job description
 
         Returns:
             LocalJob: derived from BaseJob
         """
-        q_job.job_id = str(uuid.uuid4())
-        return LocalJob(self._run_job, q_job)
+        return LocalJob(self._run_job, qobj)
 
-    def _run_job(self, q_job):
-        """Run circuits in q_job and return the result
+    def _run_job(self, qobj):
+        """Run circuits in qobj and return the result
 
             Args:
-                q_job (QuantumJob): all the information necessary
+                qobj (dict): all the information necessary
                     (e.g., circuit, backend and resources) for running a circuit
 
             Returns:
@@ -179,13 +179,21 @@ class StatevectorSimulatorSympy(BaseBackend):
                         'status': 'DONE'
                         }]
         """
-        qobj = q_job.qobj
         self._validate(qobj)
         result_list = []
+        start = time.time()
         for circuit in qobj['circuits']:
             result_list.append(self.run_circuit(circuit))
-        return Result({'job_id': q_job.job_id, 'result': result_list,
-                       'status': 'COMPLETED'}, qobj)
+        end = time.time()
+        job_id = str(uuid.uuid4())
+        result = {'backend': self._configuration['name'],
+                  'id': qobj['id'],
+                  'job_id': job_id,
+                  'result': result_list,
+                  'status': 'COMPLETED',
+                  'success': True,
+                  'time_taken': (end - start)}
+        return Result(result)
 
     def run_circuit(self, circuit):
         """Run a circuit and return object.
@@ -220,7 +228,7 @@ class StatevectorSimulatorSympy(BaseBackend):
                 qubit = operation['qubits'][0]
                 opname = operation['name'].upper()
                 opparas = operation['params']
-                _sym_op = StatevectorSimulatorSympy.get_sym_op(opname, tuple([qubit]), opparas)
+                _sym_op = SympyStatevectorSimulator.get_sym_op(opname, tuple([qubit]), opparas)
                 _applied_statevector = _sym_op * self._statevector
                 self._statevector = qapply(_applied_statevector)
             elif operation['name'] in ['id']:
@@ -236,7 +244,7 @@ class StatevectorSimulatorSympy(BaseBackend):
                 else:
                     opparas = None
                 q0q1tuple = tuple([qubit0, qubit1])
-                _sym_op = StatevectorSimulatorSympy.get_sym_op(opname, q0q1tuple, opparas)
+                _sym_op = SympyStatevectorSimulator.get_sym_op(opname, q0q1tuple, opparas)
                 self._statevector = qapply(_sym_op * self._statevector)
             else:
                 backend = globals()['__configuration']['name']
@@ -252,7 +260,7 @@ class StatevectorSimulatorSympy(BaseBackend):
             'statevector': np.asarray(list_form),
         }
 
-        return {'data': data, 'status': 'DONE'}
+        return {'name': circuit['name'], 'data': data, 'status': 'DONE'}
 
     @staticmethod
     def get_sym_op(name, qid_tuple, params=None):

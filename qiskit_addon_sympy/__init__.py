@@ -7,8 +7,8 @@
 
 """Local Sympy Backends."""
 
-from .statevector_simulator_sympy import StatevectorSimulatorSympy
-from .unitary_simulator_sympy import UnitarySimulatorSympy
+from .sympy_statevector_simulator import SympyStatevectorSimulator
+from .sympy_unitary_simulator import SympyUnitarySimulator
 from .sympyprovider import SympyProvider
 
 __version__ = '0.1.0'
