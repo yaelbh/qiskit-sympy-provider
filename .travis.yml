@@ -25,6 +25,11 @@ sudo: false
 
 stage_generic: &stage_generic
   install:
+    # TEMPORARY: clone terra, in order to use `master` with 0.6 support
+    - git clone https://github.com/Qiskit/qiskit-terra.git /tmp/terra
+    - cd /tmp/terra; mkdir out; cd out; cmake ..
+    - cd /tmp/terra; pip install -e .
+    - cd $TRAVIS_BUILD_DIR
     # Install step for jobs that require compilation and qa.
     - pip install -U -r requirements.txt
     - pip install -U -r requirements-dev.txt
@@ -38,6 +43,13 @@ stage_linux: &stage_linux
   dist: trusty
   language: python
   python: 3.5
+  addons:
+    apt:
+      sources:
+        - ubuntu-toolchain-r-test
+      packages:
+        - liblapack-dev
+        - libblas-dev
 
 stage_osx: &stage_osx
   <<: *stage_generic
