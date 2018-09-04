@@ -56,8 +56,8 @@ class TestQobj(QiskitSympyTestCase):
 
     def test_qobj_sympy_statevector_simulator(self):
         qobj = wrapper.compile(self.circuits, backend='sympy_statevector_simulator')
-        cc = qobj['circuits'][0]['compiled_circuit']
-        ccq = qobj['circuits'][0]['compiled_circuit_qasm']
+        cc = qobj.experiments[0].as_dict()
+        ccq = qobj.experiments[0].header.compiled_circuit_qasm
         self.assertIn(self.qr_name, map(lambda x: x[0], cc['header']['qubit_labels']))
         self.assertIn(self.qr_name, ccq)
         self.assertIn(self.cr_name, map(lambda x: x[0], cc['header']['clbit_labels']))
