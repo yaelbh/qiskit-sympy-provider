@@ -21,8 +21,8 @@ class SympyProvider(BaseProvider):
         # Populate the list of local Sympy backends.
         statevector_simulator = SympyStatevectorSimulator()
         unitary_simulator = SympyUnitarySimulator()
-        self.backends = {statevector_simulator.name: statevector_simulator,
-                         unitary_simulator.name: unitary_simulator}
+        self.backends = {statevector_simulator.name(): statevector_simulator,
+                         unitary_simulator.name(): unitary_simulator}
 
     def get_backend(self, name):
         return self.backends[name]

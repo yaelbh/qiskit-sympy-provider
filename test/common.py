@@ -20,7 +20,7 @@ import unittest
 from unittest.util import safe_repr
 
 from qiskit.wrapper.defaultqiskitprovider import DefaultQISKitProvider
-from qiskit_addon_sympy import __path__ as main_path
+from qiskit.backends.sympy import __path__ as main_path
 
 
 class Path(Enum):

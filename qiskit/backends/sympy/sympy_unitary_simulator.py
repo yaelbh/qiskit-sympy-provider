@@ -44,7 +44,7 @@ class SympyUnitarySimulator(BaseBackend):
 
     DEFAULT_CONFIGURATION = {
         'name': 'sympy_unitary_simulator',
-        'url': 'https://github.com/QISKit/qiskit-addon-sympy',
+        'url': 'https://github.com/Qiskit/qiskit-addon-sympy',
         'simulator': True,
         'local': True,
         'description': 'A sympy simulator for unitary matrix',

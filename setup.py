@@ -8,13 +8,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="qiskit_addon_sympy",
+    name="qiskit-addon-sympy",
     version="0.1.0",
-    author="QISKit Development Team",
+    author="Qiskit Development Team",
     author_email="qiskit@us.ibm.com",
-    description="QISKit simulators with Sympy backends",
-    long_description = "This module contains [QISKit](https://www.qiskit.org/) simulators with Sympy backends. The simulators simulate a quantum circuit on a classical computer.",
-    url="https://github.com/QISKit/qiskit-addon-sympy",
+    description="Qiskit simulators with Sympy backends",
+    long_description = "This module contains [Qiskit](https://www.qiskit.org/) simulators with Sympy backends. The simulators simulate a quantum circuit on a classical computer.",
+    url="https://github.com/Qiskit/qiskit-addon-sympy",
     license="Apache 2.0",
     classifiers=[
         "Environment :: Console",
@@ -28,9 +28,9 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Topic :: Scientific/Engineering",
     ],
-    install_requires=['qiskit>=0.5.5', 'sympy>=1.0'],
+    install_requires=['qiskit>=0.6,<0.7', 'sympy>=1.0'],
     keywords="qiskit quantum sympy simulator",
-    packages=find_packages(exclude=['test*']),
+    packages=['qiskit.backends.sympy'],
     include_package_data=True,
     python_requires=">=3.5"
 )

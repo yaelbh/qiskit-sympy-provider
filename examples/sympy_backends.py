@@ -9,8 +9,8 @@ Example use of the symbolic simulator backends, which keep precise forms of
 amplitudes.
 """
 
-from qiskit_addon_sympy import SympyProvider
 from qiskit import register, load_qasm_file, execute
+from qiskit.backends.sympy import SympyProvider
 
 
 def use_sympy_backends():
@@ -29,6 +29,7 @@ def use_sympy_backends():
     result = execute([q_circuit], backend='sympy_unitary_simulator').result()
     print("\nunitary matrix of the circuit: ")
     print(result.get_unitary(q_circuit))
+
 
 if __name__ == "__main__":
     use_sympy_backends()

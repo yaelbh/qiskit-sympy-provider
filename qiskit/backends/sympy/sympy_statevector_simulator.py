@@ -76,7 +76,7 @@ class SDGGate(OneQubitGate):
                     Matrix is a type from sympy.
                     Each entry in it can be in the symbolic form.
         """
-        # pylint: disable=redefined-builtin
+        # pylint: disable=redefined-builtin,unused-argument
         return Matrix([[1, 0], [0, -I]])
 
 
@@ -90,7 +90,7 @@ class TDGGate(OneQubitGate):
         Returns:
             Matrix: the matrix that corresponds to the gate
         """
-        # pylint: disable=redefined-builtin
+        # pylint: disable=redefined-builtin,unused-argument
         return Matrix([[1, 0], [0, exp(-I*pi/4)]])
 
 
@@ -112,7 +112,7 @@ class UGateGeneric(OneQubitGate):
         Returns:
             Matrix: the matrix that corresponds to the gate
         """
-        # pylint: disable=redefined-builtin
+        # pylint: disable=redefined-builtin,unused-argument
         return self._u_mat
 
 
@@ -121,7 +121,7 @@ class SympyStatevectorSimulator(BaseBackend):
 
     DEFAULT_CONFIGURATION = {
         'name': 'sympy_statevector_simulator',
-        'url': 'https://github.com/QISKit/qiskit-addon-sympy',
+        'url': 'https://github.com/Qiskit/qiskit-addon-sympy',
         'simulator': True,
         'local': True,
         'description': 'A sympy-based statevector simulator',

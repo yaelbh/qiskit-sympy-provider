@@ -15,7 +15,7 @@ from sympy import sqrt
 
 from qiskit import (load_qasm_file, execute, QuantumRegister,
                     ClassicalRegister, QuantumCircuit, wrapper)
-from qiskit_addon_sympy import SympyProvider
+from qiskit.backends.sympy import SympyProvider
 
 
 class SympyUnitarySimulatorTest(QiskitSympyTestCase):
