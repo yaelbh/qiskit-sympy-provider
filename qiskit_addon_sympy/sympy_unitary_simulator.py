@@ -30,11 +30,11 @@ from sympy import Matrix, pi
 from sympy.matrices import eye, zeros
 from sympy.physics.quantum import TensorProduct
 
-from qiskit._result import Result
+from qiskit import Result
 from qiskit.backends import BaseBackend
-from qiskit.backends.local.localjob import LocalJob
-from qiskit.backends.local._simulatortools import compute_ugate_matrix, index2
-from qiskit.backends.local._simulatorerror import SimulatorError
+from qiskit.backends.aer.aerjob import AerJob
+from qiskit.backends.aer._simulatortools import compute_ugate_matrix, index2
+from qiskit.backends.aer._simulatorerror import SimulatorError
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class SympyUnitarySimulator(BaseBackend):
     """Sympy implementation of a unitary simulator."""
 
     DEFAULT_CONFIGURATION = {
-        'name': 'sympy_unitary_simulator',
+        'name': 'unitary_simulator_sympy',
         'url': 'https://github.com/QISKit/qiskit-addon-sympy',
         'simulator': True,
         'local': True,

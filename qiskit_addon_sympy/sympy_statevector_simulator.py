@@ -54,11 +54,11 @@ from sympy.physics.quantum.qapply import qapply
 from sympy.physics.quantum.qubit import Qubit
 from sympy.physics.quantum.represent import represent
 
-from qiskit._result import Result
+from qiskit import Result
 from qiskit.backends import BaseBackend
-from qiskit.backends.local.localjob import LocalJob
-from qiskit.backends.local._simulatorerror import SimulatorError
-from qiskit.backends.local._simulatortools import compute_ugate_matrix
+from qiskit.backends.aer.aerjob import AerJob
+from qiskit.backends.aer._simulatorerror import SimulatorError
+from qiskit.backends.aer._simulatortools import compute_ugate_matrix
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +119,7 @@ class SympyStatevectorSimulator(BaseBackend):
     """Sympy implementation of a statevector simulator."""
 
     DEFAULT_CONFIGURATION = {
-        'name': 'sympy_statevector_simulator',
+        'name': 'statevector_simulator_sympy',
         'url': 'https://github.com/QISKit/qiskit-addon-sympy',
         'simulator': True,
         'local': True,
