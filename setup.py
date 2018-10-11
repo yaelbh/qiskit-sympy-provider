@@ -28,7 +28,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Topic :: Scientific/Engineering",
     ],
-    install_requires=['qiskit>=0.6,<0.7', 'sympy>=1.0'],
+    install_requires=['qiskit>=0.6', 'sympy>=1.0'],
     keywords="qiskit quantum sympy simulator",
     packages=['qiskit.backends.sympy'],
     include_package_data=True,

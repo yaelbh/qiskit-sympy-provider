@@ -4,10 +4,13 @@ This module contains [Qiskit](https://www.qiskit.org/) simulators with Sympy bac
 
 ## Installation
 
-Install this module via the PIP tool:
 
 ```
-pip install qiskit_addon_sympy
+cd SOMEWHERE
+git clone git@github.com:Qiskit/qiskit-addon-sympy.git
+cd qiskit-addon-sympy
+pip install -e .
+cd YOUR_PATH_TO_YOUR_QISKIT_CLONE
 ```
 
 PIP will handle all dependencies automatically.
