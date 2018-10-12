@@ -30,7 +30,7 @@ setup(
     ],
     install_requires=['qiskit>=0.6', 'sympy>=1.0'],
     keywords="qiskit quantum sympy simulator",
-    packages=['qiskit.backends.sympy'],
+    packages=['qiskit_addon_sympy'],
     include_package_data=True,
     python_requires=">=3.5"
 )
