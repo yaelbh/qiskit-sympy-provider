@@ -56,7 +56,6 @@ class TestQobj(QiskitSympyTestCase):
     """Check the objects compiled for this backend create names properly"""
 
     def setUp(self):
-        
         qr = QuantumRegister(2, name="qr2")
         cr = ClassicalRegister(2, name=None)
         qc = QuantumCircuit(qr, cr, name="qc10")

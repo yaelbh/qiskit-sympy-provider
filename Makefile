@@ -6,7 +6,7 @@
 
 # Ignoring generated ones with .py extension.
 lint:
-	pylint -rn qiskit/backends/sympy test
+	pylint -rn qiskit_addon_sympy test
 
 style:
 	pycodestyle --max-line-length=100 qiskit test

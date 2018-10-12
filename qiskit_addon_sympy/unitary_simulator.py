@@ -174,7 +174,7 @@ class SympyUnitarySimulator(BaseBackend):
             qobj (dict): job description
 
         Returns:
-            LocalJob: derived from BaseJob
+            AerJob: derived from BaseJob
         """
         job_id = str(uuid.uuid4())
         sym_job = AerJob(self, job_id, self._run_job, qobj)
@@ -186,6 +186,7 @@ class SympyUnitarySimulator(BaseBackend):
 
         Args:
             qobj (Qobj): Qobj structure
+            job_id (str): a id for the job
 
         Returns:
             Result: Result is a class including the information to be returned to users.

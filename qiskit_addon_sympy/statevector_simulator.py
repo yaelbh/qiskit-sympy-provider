@@ -55,6 +55,7 @@ from sympy.physics.quantum.qubit import Qubit
 from sympy.physics.quantum.represent import represent
 
 from qiskit.result._utils import result_from_old_style_dict
+from qiskit.qobj import QobjItem
 from qiskit.backends import BaseBackend
 from qiskit.backends.aer.aerjob import AerJob
 from qiskit.backends.aer._simulatorerror import SimulatorError
@@ -168,6 +169,7 @@ class SympyStatevectorSimulator(BaseBackend):
 
             Args:
                 qobj (Qobj): Qobj structure
+                job_id (str): A job id
 
             Returns:
                 Result: Result is a class including the information to be returned to users.
