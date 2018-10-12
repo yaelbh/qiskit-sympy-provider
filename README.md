@@ -1,8 +1,10 @@
 [![Build Status](https://travis-ci.com/Qiskit/qiskit-addon-sympy.svg?branch=master)](https://travis-ci.com/Qiskit/qiskit-addon-sympy)
 
-# Quantum simulators based on Sympy
+# Qiskit Sympy Provider
 
-This module contains [Qiskit](https://www.qiskit.org/) simulators with Sympy Provider. The simulators simulate a quantum circuit on a classical computer.
+This module contains [Qiskit](https://www.qiskit.org/) simulators with Qiskit Sympy Provider. The simulators simulate a quantum circuit on a classical computer. There are two types of simulators 
+* Statevector simulator - returns the statevector of a quantum circuit 
+* unitary simulator - returns the unitary representation of a quantum circuit 
 
 ## Installation
 
