@@ -32,4 +32,8 @@ class SympyProvider(BaseProvider):
             return filter_backends(self._backends, filters=filters, **kwargs)
 
     def __str__(self):
+<<<<<<< HEAD
         return 'SympyProvider'
+=======
+        return 'SympyProvider'
+>>>>>>> origin/master
