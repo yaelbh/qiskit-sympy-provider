@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Qiskit/ qiskit-addon-sympy.svg?branch=master)](https://travis-ci.org/Qiskit/ qiskit-addon-sympy)
+[![Build Status](https://travis-ci.org/Qiskit/qiskit-addon-sympy.svg?branch=master)](https://travis-ci.org/Qiskit/qiskit-addon-sympy)
 
 # Qiskit simulators based on Sympy
 
