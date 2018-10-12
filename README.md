@@ -2,7 +2,7 @@
 
 # Qiskit Sympy Provider
 
-This module contains [Qiskit](https://www.qiskit.org/) simulators with Qiskit Sympy Provider. This provider adds to Qiskit two symbolic quantum circuit simulators using Sympy. The two types of simulators are:
+This module contains [Qiskit](https://www.qiskit.org/) simulators with Qiskit Sympy Provider. This provider adds to Qiskit two symbolic quantum circuit simulators using [Sympy](https://www.sympy.org/en/index.html). The two types of simulators are:
 * Statevector simulator - returns the statevector of a quantum circuit 
 * unitary simulator - returns the unitary representation of a quantum circuit 
 
