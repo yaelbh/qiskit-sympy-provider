@@ -19,7 +19,7 @@ PIP will handle all dependencies automatically.
 
 ## Usage
 
-We recommend to follow the [usage example](examples/sympy_backends.py). More general information and education on running quantum simulation can be found in the [Qiskit instructions page](https://github.com/Qiskit/qiskit-core) and the Qiskit tutorials.
+We recommend to follow the [usage example](examples/sympy_statevector.py). More general information and education on running quantum simulation can be found in the [Qiskit instructions page](https://github.com/Qiskit/qiskit-core) and the Qiskit tutorials.
 
 ## License
 
