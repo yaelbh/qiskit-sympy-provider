@@ -39,8 +39,4 @@ print(backend.provider)
 print(backend.configuration())
 
 # gets the properties of the backend.
-<<<<<<< HEAD
 print(backend.properties())
-=======
-print(backend.properties())
->>>>>>> origin/master
