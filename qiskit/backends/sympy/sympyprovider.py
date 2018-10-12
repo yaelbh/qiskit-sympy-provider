@@ -8,9 +8,9 @@
 """Provider for local Sympy backends."""
 
 from qiskit.backends import BaseProvider
+from qiskit.backends.providerutils import filter_backends
 from .sympy_statevector_simulator import SympyStatevectorSimulator
 from .sympy_unitary_simulator import SympyUnitarySimulator
-from qiskit.backends.providerutils import filter_backends
 
 class SympyProvider(BaseProvider):
     """Provider for local Sympy backends."""
@@ -29,12 +29,14 @@ class SympyProvider(BaseProvider):
 >>>>>>> Adding changes:qiskit_addon_sympy/sympyprovider.py
 
     def get_backend(self, name):
-        backends = self._backends
-        return super().get_backend(name=name, **kwargs)
+        return super().get_backend(name=name)
 
     def backends(self, name=None, filters=None, **kwargs):
         # pylint: disable=arguments-differ
-        return filter_backends(self._backends, filters=filters, **kwargs)
+        if name:
+            return filter_backends(self._backends, name=name, filters=filters, **kwargs)
+        else:
+            return filter_backends(self._backends, filters=filters, **kwargs)
 
     def __str__(self):
         return 'SympyProvider'
