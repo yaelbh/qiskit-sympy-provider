@@ -8,8 +8,8 @@ This module contains [Qiskit](https://www.qiskit.org/) simulators with Sympy bac
 
 
 ```
-git clone git@github.com:Qiskit/qiskit-addon-sympy.git
-cd qiskit-addon-sympy
+git clone git@github.com:Qiskit/qiskit-sympy-provider.git
+cd qiskit-sympy-provider
 pip install -e .
 ```
 
