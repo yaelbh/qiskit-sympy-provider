@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.com/Qiskit/qiskit-addon-sympy.svg?branch=master)](https://travis-ci.com/Qiskit/qiskit-addon-sympy)
 
-# Qiskit simulators based on Sympy
+# Quantum simulators based on Sympy
 
-This module contains [Qiskit](https://www.qiskit.org/) simulators with Sympy backends. The simulators simulate a quantum circuit on a classical computer.
+This module contains [Qiskit](https://www.qiskit.org/) simulators with Sympy Provider. The simulators simulate a quantum circuit on a classical computer.
 
 ## Installation
 
