@@ -54,11 +54,12 @@ from sympy.physics.quantum.qapply import qapply
 from sympy.physics.quantum.qubit import Qubit
 from sympy.physics.quantum.represent import represent
 
-from qiskit._result import Result
+from qiskit.result._utils import result_from_old_style_dict
+from qiskit.qobj import QobjItem
 from qiskit.backends import BaseBackend
-from qiskit.backends.local.localjob import LocalJob
-from qiskit.backends.local._simulatorerror import SimulatorError
-from qiskit.backends.local._simulatortools import compute_ugate_matrix
+from qiskit.backends.aer.aerjob import AerJob
+from qiskit.backends.aer._simulatorerror import SimulatorError
+from qiskit.backends.aer._simulatortools import compute_ugate_matrix
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +76,7 @@ class SDGGate(OneQubitGate):
                     Matrix is a type from sympy.
                     Each entry in it can be in the symbolic form.
         """
-        # pylint: disable=redefined-builtin
+        # pylint: disable=redefined-builtin,unused-argument
         return Matrix([[1, 0], [0, -I]])
 
 
@@ -89,7 +90,7 @@ class TDGGate(OneQubitGate):
         Returns:
             Matrix: the matrix that corresponds to the gate
         """
-        # pylint: disable=redefined-builtin
+        # pylint: disable=redefined-builtin,unused-argument
         return Matrix([[1, 0], [0, exp(-I*pi/4)]])
 
 
@@ -111,7 +112,7 @@ class UGateGeneric(OneQubitGate):
         Returns:
             Matrix: the matrix that corresponds to the gate
         """
-        # pylint: disable=redefined-builtin
+        # pylint: disable=redefined-builtin,unused-argument
         return self._u_mat
 
 
@@ -119,8 +120,8 @@ class SympyStatevectorSimulator(BaseBackend):
     """Sympy implementation of a statevector simulator."""
 
     DEFAULT_CONFIGURATION = {
-        'name': 'sympy_statevector_simulator',
-        'url': 'https://github.com/QISKit/qiskit-addon-sympy',
+        'name': 'statevector_simulator',
+        'url': 'https://github.com/Qiskit/qiskit-addon-sympy',
         'simulator': True,
         'local': True,
         'description': 'A sympy-based statevector simulator',
@@ -128,13 +129,15 @@ class SympyStatevectorSimulator(BaseBackend):
         'basis_gates': 'u1,u2,u3,cx,id'
     }
 
-    def __init__(self, configuration=None):
+    def __init__(self, configuration=None, provider=None):
         """Initialize the SympyStatevectorSimulator object.
 
         Args:
             configuration (dict): backend configuration
+            provider (SympyProvider): parent provider
         """
-        super().__init__(configuration or self.DEFAULT_CONFIGURATION.copy())
+        super().__init__(configuration or self.DEFAULT_CONFIGURATION.copy(),
+                         provider=provider)
 
         self._number_of_qubits = None
         self._statevector = None
@@ -158,14 +161,17 @@ class SympyStatevectorSimulator(BaseBackend):
         Returns:
             LocalJob: derived from BaseJob
         """
-        return LocalJob(self._run_job, qobj)
+        job_id = str(uuid.uuid4())
+        sym_job = AerJob(self, job_id, self._run_job, qobj)
+        sym_job.submit()
+        return sym_job
 
-    def _run_job(self, qobj):
+    def _run_job(self, job_id, qobj):
         """Run circuits in qobj and return the result
 
             Args:
-                qobj (dict): all the information necessary
-                    (e.g., circuit, backend and resources) for running a circuit
+                qobj (Qobj): Qobj structure
+                job_id (str): A job id
 
             Returns:
                 Result: Result is a class including the information to be returned to users.
@@ -182,24 +188,25 @@ class SympyStatevectorSimulator(BaseBackend):
         self._validate(qobj)
         result_list = []
         start = time.time()
-        for circuit in qobj['circuits']:
+        for circuit in qobj.experiments:
             result_list.append(self.run_circuit(circuit))
         end = time.time()
-        job_id = str(uuid.uuid4())
-        result = {'backend': self._configuration['name'],
-                  'id': qobj['id'],
+        result = {'backend': self.name,
+                  'id': qobj.qobj_id,
                   'job_id': job_id,
                   'result': result_list,
                   'status': 'COMPLETED',
                   'success': True,
                   'time_taken': (end - start)}
-        return Result(result)
+        return result_from_old_style_dict(
+            result,
+            [circuit.header.name for circuit in qobj.experiments])
 
     def run_circuit(self, circuit):
         """Run a circuit and return object.
 
         Args:
-            circuit (dict): JSON that describes the circuit
+            circuit (QobjExperiment): Qobj experiment
         Returns:
             dict: A dictionary of results which looks something like::
 
@@ -212,44 +219,40 @@ class SympyStatevectorSimulator(BaseBackend):
         Raises:
             SimulatorError: if an error occurred.
         """
-        ccircuit = circuit['compiled_circuit']
-        self._number_of_qubits = ccircuit['header']['number_of_qubits']
+        self._number_of_qubits = circuit.header.number_of_qubits
         self._statevector = 0
 
         self._statevector = Qubit(*tuple([0]*self._number_of_qubits))
-        for operation in ccircuit['operations']:
-            if 'conditional' in operation:
+        for operation in circuit.instructions:
+            if getattr(operation, 'conditional', None):
                 raise SimulatorError('conditional operations not supported '
                                      'in statevector simulator')
-            if operation['name'] == 'measure' or operation['name'] == 'reset':
+            if operation.name in ('measure', 'reset'):
                 raise SimulatorError('operation {} not supported by '
-                                     'sympy statevector simulator.'.format(operation['name']))
-            if operation['name'] in ['U', 'u1', 'u2', 'u3']:
-                qubit = operation['qubits'][0]
-                opname = operation['name'].upper()
-                opparas = operation['params']
+                                     'sympy statevector simulator.'.format(operation.name))
+            if operation.name in ('U', 'u1', 'u2', 'u3'):
+                qubit = operation.qubits[0]
+                opname = operation.name.upper()
+                opparas = getattr(operation, 'params', None)
                 _sym_op = SympyStatevectorSimulator.get_sym_op(opname, tuple([qubit]), opparas)
                 _applied_statevector = _sym_op * self._statevector
                 self._statevector = qapply(_applied_statevector)
-            elif operation['name'] in ['id']:
+            elif operation.name == 'id':
                 logger.info('Identity gate is ignored by sympy-based statevector simulator.')
-            elif operation['name'] in ['barrier']:
+            elif operation.name == 'barrier':
                 logger.info('Barrier is ignored by sympy-based statevector simulator.')
-            elif operation['name'] in ['CX', 'cx']:
-                qubit0 = operation['qubits'][0]
-                qubit1 = operation['qubits'][1]
-                opname = operation['name'].upper()
-                if 'params' in operation:
-                    opparas = operation['params']
-                else:
-                    opparas = None
+            elif operation.name in ('CX', 'cx'):
+                qubit0 = operation.qubits[0]
+                qubit1 = operation.qubits[1]
+                opname = operation.name.upper()
+                opparas = getattr(operation, 'params', None)
                 q0q1tuple = tuple([qubit0, qubit1])
                 _sym_op = SympyStatevectorSimulator.get_sym_op(opname, q0q1tuple, opparas)
                 self._statevector = qapply(_sym_op * self._statevector)
             else:
-                backend = globals()['__configuration']['name']
+                backend = self.name
                 err_msg = '{0} encountered unrecognized operation "{1}"'
-                raise SimulatorError(err_msg.format(backend, operation['name']))
+                raise SimulatorError(err_msg.format(backend, operation.name))
 
         matrix_form = represent(self._statevector)
         shape_n = matrix_form.shape[0]
@@ -260,7 +263,11 @@ class SympyStatevectorSimulator(BaseBackend):
             'statevector': np.asarray(list_form),
         }
 
-        return {'name': circuit['name'], 'data': data, 'status': 'DONE'}
+        return {'name': circuit.header.name,
+                'data': data,
+                'status': 'DONE',
+                'success': True,
+                'shots': circuit.config.shots}
 
     @staticmethod
     def get_sym_op(name, qid_tuple, params=None):
@@ -341,22 +348,39 @@ class SympyStatevectorSimulator(BaseBackend):
 
         1. No shots
         2. No measurements in the middle
+
+        Args:
+            qobj (Qobj): Qobj structure.
+
+        Raises:
+            SimulatorError: if unsupported operations passed
         """
         self._set_shots_to_1(qobj, False)
-        for circuit in qobj['circuits']:
+        for circuit in qobj.experiments:
             self._set_shots_to_1(circuit, True)
-            for operator in circuit['compiled_circuit']['operations']:
-                if operator['name'] in ['measure', 'reset']:
-                    raise SimulatorError("In circuit {}: statevector simulator does "
-                                         "not support measure or reset.".format(circuit['name']))
+            for operator in circuit.instructions:
+                if operator.name in ('measure', 'reset'):
+                    raise SimulatorError(
+                        "In circuit {}: statevector simulator does not support measure or "
+                        "reset.".format(circuit.header.name))
 
-    def _set_shots_to_1(self, dictionary, include_name):
-        if 'config' not in dictionary:
-            dictionary['config'] = {}
-        if 'shots' in dictionary['config'] and dictionary['config']['shots'] != 1:
+    def _set_shots_to_1(self, qobj_item, include_name):
+        """Set the number of shots to 1.
+
+        Args:
+            qobj_item (QobjItem): QobjItem structure
+            include_name (bool): include the name of the item in the log entry
+        """
+        if not getattr(qobj_item, 'config', None):
+            qobj_item.config = QobjItem(shots=1)
+
+        if getattr(qobj_item.config, 'shots', None) != 1:
             warn = 'statevector simulator only supports 1 shot. Setting shots=1'
             if include_name:
-                warn += 'Setting shots=1 for circuit' + dictionary['name']
+                try:
+                    warn += 'Setting shots=1 for circuit' + qobj_item.header.name
+                except AttributeError:
+                    pass
             warn += '.'
             logger.info(warn)
-        dictionary['config']['shots'] = 1
+        qobj_item.config.shots = 1

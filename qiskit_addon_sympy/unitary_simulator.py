@@ -30,11 +30,12 @@ from sympy import Matrix, pi
 from sympy.matrices import eye, zeros
 from sympy.physics.quantum import TensorProduct
 
-from qiskit._result import Result
 from qiskit.backends import BaseBackend
-from qiskit.backends.local.localjob import LocalJob
-from qiskit.backends.local._simulatortools import compute_ugate_matrix, index2
-from qiskit.backends.local._simulatorerror import SimulatorError
+from qiskit.backends.aer.aerjob import AerJob
+from qiskit.backends.aer._simulatortools import compute_ugate_matrix, index2
+from qiskit.backends.aer._simulatorerror import SimulatorError
+from qiskit.result._utils import result_from_old_style_dict
+
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +44,8 @@ class SympyUnitarySimulator(BaseBackend):
     """Sympy implementation of a unitary simulator."""
 
     DEFAULT_CONFIGURATION = {
-        'name': 'sympy_unitary_simulator',
-        'url': 'https://github.com/QISKit/qiskit-addon-sympy',
+        'name': 'unitary_simulator',
+        'url': 'https://github.com/Qiskit/qiskit-addon-sympy',
         'simulator': True,
         'local': True,
         'description': 'A sympy simulator for unitary matrix',
@@ -52,9 +53,10 @@ class SympyUnitarySimulator(BaseBackend):
         'basis_gates': 'u1,u2,u3,cx,id'
     }
 
-    def __init__(self, configuration=None):
+    def __init__(self, configuration=None, provider=None):
         """Initialize the SympyUnitarySimulator object."""
-        super().__init__(configuration or self.DEFAULT_CONFIGURATION.copy())
+        super().__init__(configuration or self.DEFAULT_CONFIGURATION.copy(),
+                         provider=provider)
 
         self._unitary_state = None
         self._number_of_qubits = None
@@ -163,8 +165,8 @@ class SympyUnitarySimulator(BaseBackend):
             qubit0 (int): id of the control qubit
             qubit1 (int): id of the target qubit
         """
-        unitaty_add = self.enlarge_two_opt_sympy(gate, qubit0, qubit1, self._number_of_qubits)
-        self._unitary_state = unitaty_add*self._unitary_state
+        unitary_add = self.enlarge_two_opt_sympy(gate, qubit0, qubit1, self._number_of_qubits)
+        self._unitary_state = unitary_add*self._unitary_state
 
     def run(self, qobj):
         """Run qobj asynchronously.
@@ -173,16 +175,19 @@ class SympyUnitarySimulator(BaseBackend):
             qobj (dict): job description
 
         Returns:
-            LocalJob: derived from BaseJob
+            AerJob: derived from BaseJob
         """
-        return LocalJob(self._run_job, qobj)
+        job_id = str(uuid.uuid4())
+        sym_job = AerJob(self, job_id, self._run_job, qobj)
+        sym_job.submit()
+        return sym_job
 
-    def _run_job(self, qobj):
+    def _run_job(self, job_id, qobj):
         """Run qobj
 
         Args:
-            qobj (dict): all the information necessary
-                (e.g., circuit, backend and resources) for running a circuit
+            qobj (Qobj): Qobj structure
+            job_id (str): a id for the job
 
         Returns:
             Result: Result is a class including the information to be returned to users.
@@ -199,23 +204,24 @@ class SympyUnitarySimulator(BaseBackend):
         """
         result_list = []
         start = time.time()
-        for circuit in qobj['circuits']:
+        for circuit in qobj.experiments:
             result_list.append(self.run_circuit(circuit))
         end = time.time()
-        job_id = str(uuid.uuid4())
-        result = {'backend': self._configuration['name'],
-                  'id': qobj['id'],
+        result = {'backend': self.name,
+                  'id': qobj.qobj_id,
                   'job_id': job_id,
                   'result': result_list,
                   'status': 'COMPLETED',
                   'success': True,
                   'time_taken': (end - start)}
-        return Result(result)
+        return result_from_old_style_dict(
+            result,
+            [circuit.header.name for circuit in qobj.experiments])
 
     def run_circuit(self, circuit):
         """Run a circuit and return the results.
         Args:
-            circuit (dict): JSON that describes the circuit
+            circuit (QobjExperiment): Qobj experiment
 
         Returns:
             dict: A dictionary of results which looks something like::
@@ -230,32 +236,29 @@ class SympyUnitarySimulator(BaseBackend):
         Raises:
             SimulatorError: if unsupported operations passed
         """
-        ccircuit = circuit['compiled_circuit']
-        self._number_of_qubits = ccircuit['header']['number_of_qubits']
-        result = {}
-        result['data'] = {}
+        self._number_of_qubits = circuit.header.number_of_qubits
+        result = {
+            'data': {}
+        }
         self._unitary_state = eye(2 ** self._number_of_qubits)
-        for operation in ccircuit['operations']:
-            if 'conditional' in operation:
+        for operation in circuit.instructions:
+            if getattr(operation, 'conditional', None):
                 raise SimulatorError('conditional operations not supported in unitary simulator')
-            if operation['name'] == 'measure' or operation['name'] == 'reset':
+            if operation.name in ('measure', 'reset'):
                 raise SimulatorError('operation {} not supported by '
-                                     'sympy unitary simulator.'.format(operation['name']))
-            if operation['name'] in ['U', 'u1', 'u2', 'u3']:
-                if 'params' in operation:
-                    params = operation['params']
-                else:
-                    params = None
-                qubit = operation['qubits'][0]
+                                     'sympy unitary simulator.'.format(operation.name))
+            if operation.name in ('U', 'u1', 'u2', 'u3'):
+                params = getattr(operation, 'params', None)
+                qubit = operation.qubits[0]
                 gate = SympyUnitarySimulator.compute_ugate_matrix_wrap(params)
                 self._add_unitary_single(gate, qubit)
-            elif operation['name'] in ['id']:
+            elif operation.name == 'id':
                 logger.info('Identity gate is ignored by sympy-based unitary simulator.')
-            elif operation['name'] in ['barrier']:
+            elif operation.name == 'barrier':
                 logger.info('Barrier is ignored by sympy-based unitary simulator.')
-            elif operation['name'] in ['CX', 'cx']:
-                qubit0 = operation['qubits'][0]
-                qubit1 = operation['qubits'][1]
+            elif operation.name in ('CX', 'cx'):
+                qubit0 = operation.qubits[0]
+                qubit1 = operation.qubits[1]
                 gate = Matrix([[1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0]])
                 self._add_unitary_two(gate, qubit0, qubit1)
             else:
@@ -263,6 +266,8 @@ class SympyUnitarySimulator(BaseBackend):
                 return result
         result['data']['unitary'] = np.array(self._unitary_state)
         result['status'] = 'DONE'
-        result['name'] = circuit['name']
+        result['name'] = circuit.header.name
+        result['success'] = True
+        result['shots'] = 1
 
         return result

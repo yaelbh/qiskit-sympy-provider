@@ -4,31 +4,34 @@
 #
 # This source code is licensed under the Apache License, Version 2.0 found in
 # the LICENSE.txt file in the root directory of this source tree.
-"""
-Example use of the symbolic simulator backends, which keep precise forms of
-amplitudes.
-"""
+
+""" Usage examples for the Sympy Provider """
 
 from qiskit_addon_sympy import SympyProvider
-from qiskit import register, load_qasm_file, execute
 
 
-def use_sympy_backends():
-    """ Usage examples for the Sympy simulators """
+SyQ = SympyProvider()
 
-    # register with the SympyProvider to get access to its simulators
-    register(provider_class=SympyProvider)
-    q_circuit = load_qasm_file('simple.qasm')
+# prints the symp
+print(SyQ.backends())
 
-    # sympy statevector simulator
-    result = execute(q_circuit, backend='sympy_statevector_simulator').result()
-    print("final quantum amplitude vector: ")
-    print(result.get_statevector(q_circuit))
+print(SyQ.backends(name='statevector_simulator'))
 
-    # sympy unitary simulator
-    result = execute([q_circuit], backend='sympy_unitary_simulator').result()
-    print("\nunitary matrix of the circuit: ")
-    print(result.get_unitary(q_circuit))
+backend = SyQ.get_backend('statevector_simulator')
+print(backend)
 
-if __name__ == "__main__":
-    use_sympy_backends()
+
+# gets the name of the backend.
+print(backend.name())
+
+# gets the status of the backend.
+print(backend.status())
+
+# returns the provider of the backend
+print(backend.provider) 
+
+# gets the configuration of the backend.
+print(backend.configuration())
+
+# gets the properties of the backend.
+print(backend.properties())

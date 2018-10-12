@@ -6,7 +6,7 @@
 # the LICENSE.txt file in the root directory of this source tree.
 
 """
-QISKit Sympy simulators unit tests.
+Qiskit Sympy simulators unit tests.
 Note: see Issue #4 - this file is temporary;
       common.py in qiskit-core will move to a location which is included in the pip package.
 """
