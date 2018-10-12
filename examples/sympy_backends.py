@@ -18,10 +18,11 @@ from qiskit_addon_sympy import SympyProvider
 
 
 
-""" Usage examples for the Sympy simulators """
+""" Usage examples for the Sympy Provider """
 
 SyQ = SympyProvider()
 
+# prints the symp
 print(SyQ.backends())
 
 <<<<<<< HEAD
