@@ -20,7 +20,8 @@ class SympyProvider(BaseProvider):
         super().__init__(args, kwargs)
 
         # Populate the list of local Sympy backends.
-        self._backends = [SympyStatevectorSimulator(), SympyUnitarySimulator()]
+        self._backends = [SympyStatevectorSimulator(provider=self),
+                          SympyUnitarySimulator(provider=self)]
 
     def get_backend(self, name=None, **kwargs):
         return super().get_backend(name=name, **kwargs)
@@ -28,10 +29,9 @@ class SympyProvider(BaseProvider):
     def backends(self, name=None, filters=None, **kwargs):
         # pylint: disable=arguments-differ
         if name:
-            temp = filter_backends(self._backends, name=name, filters=filters, **kwargs)
-        else:
-            temp = filter_backends(self._backends, filters=filters, **kwargs)
-        return temp
+            kwargs.update({'name': name})
+
+        return filter_backends(self._backends, filters=filters, **kwargs)
 
     def __str__(self):
         return 'SympyProvider'

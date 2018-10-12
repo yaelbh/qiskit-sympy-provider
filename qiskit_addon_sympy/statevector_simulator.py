@@ -129,13 +129,15 @@ class SympyStatevectorSimulator(BaseBackend):
         'basis_gates': 'u1,u2,u3,cx,id'
     }
 
-    def __init__(self, configuration=None):
+    def __init__(self, configuration=None, provider=None):
         """Initialize the SympyStatevectorSimulator object.
 
         Args:
             configuration (dict): backend configuration
+            provider (SympyProvider): parent provider
         """
-        super().__init__(configuration or self.DEFAULT_CONFIGURATION.copy())
+        super().__init__(configuration or self.DEFAULT_CONFIGURATION.copy(),
+                         provider=provider)
 
         self._number_of_qubits = None
         self._statevector = None

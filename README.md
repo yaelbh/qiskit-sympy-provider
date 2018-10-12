@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Qiskit/qiskit-addon-sympy.svg?branch=master)](https://travis-ci.org/Qiskit/qiskit-addon-sympy)
+[![Build Status](https://travis-ci.com/Qiskit/qiskit-addon-sympy.svg?branch=master)](https://travis-ci.com/Qiskit/qiskit-addon-sympy)
 
 # Qiskit simulators based on Sympy
 
@@ -8,11 +8,9 @@ This module contains [Qiskit](https://www.qiskit.org/) simulators with Sympy bac
 
 
 ```
-cd SOMEWHERE
 git clone git@github.com:Qiskit/qiskit-addon-sympy.git
 cd qiskit-addon-sympy
 pip install -e .
-cd YOUR_PATH_TO_YOUR_QISKIT_CLONE
 ```
 
 PIP will handle all dependencies automatically.

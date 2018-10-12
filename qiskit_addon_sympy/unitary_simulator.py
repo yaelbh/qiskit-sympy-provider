@@ -53,9 +53,10 @@ class SympyUnitarySimulator(BaseBackend):
         'basis_gates': 'u1,u2,u3,cx,id'
     }
 
-    def __init__(self, configuration=None):
+    def __init__(self, configuration=None, provider=None):
         """Initialize the SympyUnitarySimulator object."""
-        super().__init__(configuration or self.DEFAULT_CONFIGURATION.copy())
+        super().__init__(configuration or self.DEFAULT_CONFIGURATION.copy(),
+                         provider=provider)
 
         self._unitary_state = None
         self._number_of_qubits = None

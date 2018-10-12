@@ -4,16 +4,11 @@
 #
 # This source code is licensed under the Apache License, Version 2.0 found in
 # the LICENSE.txt file in the root directory of this source tree.
-"""
-Example use of the symbolic simulator backends, which keep precise forms of
-amplitudes.
-"""
+
+""" Usage examples for the Sympy Provider """
 
 from qiskit_addon_sympy import SympyProvider
 
-
-
-""" Usage examples for the Sympy Provider """
 
 SyQ = SympyProvider()
 
