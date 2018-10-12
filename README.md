@@ -19,6 +19,12 @@ PIP will handle all dependencies automatically.
 
 We recommend to follow the [usage example](examples/sympy_statevector.py). More general information and education on running quantum simulation can be found in the [Qiskit instructions page](https://github.com/Qiskit/qiskit-core) and the Qiskit tutorials.
 
+## Authors 
+
+The Qiskit Sympy Provider was originally authored by Peng Liu and Marco Pistoia.
+
+And continues to grow with the help and work of many people who contribute to the project at different levels.
+
 ## License
 
 This project uses the [Apache License Version 2.0 software license](https://www.apache.org/licenses/LICENSE-2.0).
