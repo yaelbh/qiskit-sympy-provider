@@ -25,7 +25,7 @@ qc.cx(q[0], q[1])
 
 # See a list of available local simulators
 print("SyQ backends: ", SyQ.backends())
-backend_sim = SyQ.get_backend('statevector_simulator')
+backend_sim = SyQ.get_backend('unitary_simulator')
 
 # Compile and run the Quantum circuit on a simulator backend
 job_sim = execute(qc, backend_sim)
@@ -33,4 +33,4 @@ result_sim = job_sim.result()
 
 # Show the results
 print("simulation: ", result_sim)
-print(result_sim.get_statevector(qc))
+print(result_sim.get_unitary(qc))

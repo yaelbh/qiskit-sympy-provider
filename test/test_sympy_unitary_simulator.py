@@ -15,14 +15,13 @@ from sympy import sqrt
 
 from qiskit import (load_qasm_file, execute, QuantumRegister,
                     ClassicalRegister, QuantumCircuit, wrapper)
-from qiskit.backends.sympy import SympyProvider
+from qiskit_addon_sympy import SympyProvider
 
 
 class SympyUnitarySimulatorTest(QiskitSympyTestCase):
     """Test local unitary simulator sympy."""
 
     def setUp(self):
-        wrapper.register(provider_class=SympyProvider)
 
         self.qasm_filename = self._get_resource_path('simple.qasm')
         self.q_circuit = load_qasm_file(self.qasm_filename)
@@ -30,7 +29,9 @@ class SympyUnitarySimulatorTest(QiskitSympyTestCase):
     def test_unitary_simulator(self):
         """test generation of circuit unitary"""
 
-        result = execute(self.q_circuit, backend='sympy_unitary_simulator').result()
+        SyQ = SympyProvider()
+        backend = SyQ.get_backend('unitary_simulator')
+        result = execute(self.q_circuit, backend).result()
         actual = result.get_unitary(self.q_circuit)
 
         self.assertEqual(actual[0][0], sqrt(2)/2)
@@ -55,8 +56,7 @@ class TestQobj(QiskitSympyTestCase):
     """Check the objects compiled for this backend create names properly"""
 
     def setUp(self):
-        wrapper.register(provider_class=SympyProvider)
-
+        
         qr = QuantumRegister(2, name="qr2")
         cr = ClassicalRegister(2, name=None)
         qc = QuantumCircuit(qr, cr, name="qc10")
@@ -67,7 +67,9 @@ class TestQobj(QiskitSympyTestCase):
         self.circuits = [qc]
 
     def test_qobj_sympy_unitary_simulator(self):
-        qobj = wrapper.compile(self.circuits, backend='sympy_unitary_simulator')
+        SyQ = SympyProvider()
+        backend = SyQ.get_backend('unitary_simulator')
+        qobj = wrapper.compile(self.circuits, backend)
         cc = qobj.experiments[0].as_dict()
         ccq = qobj.experiments[0].header.compiled_circuit_qasm
         self.assertIn(self.qr_name, map(lambda x: x[0], cc['header']['qubit_labels']))

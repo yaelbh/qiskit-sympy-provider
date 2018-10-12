@@ -54,7 +54,7 @@ from sympy.physics.quantum.qapply import qapply
 from sympy.physics.quantum.qubit import Qubit
 from sympy.physics.quantum.represent import represent
 
-from qiskit import Result
+from qiskit.result._utils import result_from_old_style_dict
 from qiskit.backends import BaseBackend
 from qiskit.backends.aer.aerjob import AerJob
 from qiskit.backends.aer._simulatorerror import SimulatorError
@@ -158,11 +158,12 @@ class SympyStatevectorSimulator(BaseBackend):
         Returns:
             LocalJob: derived from BaseJob
         """
-        local_job = LocalJob(self._run_job, qobj)
-        local_job.submit()
-        return local_job
+        job_id = str(uuid.uuid4())
+        sym_job = AerJob(self, job_id, self._run_job, qobj)
+        sym_job.submit()
+        return sym_job
 
-    def _run_job(self, qobj):
+    def  _run_job(self, job_id, qobj):
         """Run circuits in qobj and return the result
 
             Args:
@@ -186,7 +187,6 @@ class SympyStatevectorSimulator(BaseBackend):
         for circuit in qobj.experiments:
             result_list.append(self.run_circuit(circuit))
         end = time.time()
-        job_id = str(uuid.uuid4())
         result = {'backend': self.name,
                   'id': qobj.qobj_id,
                   'job_id': job_id,

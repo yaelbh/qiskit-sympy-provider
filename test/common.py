@@ -19,8 +19,7 @@ import os
 import unittest
 from unittest.util import safe_repr
 
-from qiskit.wrapper.defaultqiskitprovider import DefaultQISKitProvider
-from qiskit.backends.sympy import __path__ as main_path
+from qiskit_addon_sympy import __path__ as main_path
 
 
 class Path(Enum):
@@ -61,11 +60,6 @@ class QiskitSympyTestCase(unittest.TestCase):
                                              logging.INFO)
             cls.log.setLevel(level)
 
-    def tearDown(self):
-        # Reset the default provider, as in practice it acts as a singleton
-        # due to importing the wrapper from qiskit.
-        from qiskit.wrapper import _wrapper
-        _wrapper._DEFAULT_PROVIDER = DefaultQISKitProvider()
 
     @staticmethod
     def _get_resource_path(filename, path=Path.TEST):
