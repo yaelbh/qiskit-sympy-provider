@@ -9,12 +9,7 @@ Example use of the symbolic simulator backends, which keep precise forms of
 amplitudes.
 """
 
-<<<<<<< HEAD
-from qiskit import register, load_qasm_file, execute
-from qiskit.backends.sympy import SympyProvider
-=======
 from qiskit_addon_sympy import SympyProvider
->>>>>>> Adding changes
 
 
 
@@ -25,18 +20,9 @@ SyQ = SympyProvider()
 # prints the symp
 print(SyQ.backends())
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+print(SyQ.backends(name='statevector_simulator'))
 
-if __name__ == "__main__":
-    use_sympy_backends()
-=======
-print(SyQ.backends(name='statevector_simulator_sympy'))
->>>>>>> Adding changes
-=======
-print(SyQ.backends(name='statevector_simulator_sympy'))
-
-backend = SyQ.get_backend('statevector_simulator_sympy')
+backend = SyQ.get_backend('statevector_simulator')
 print(backend)
 
 
@@ -54,4 +40,3 @@ print(backend.configuration())
 
 # gets the properties of the backend.
 print(backend.properties())
->>>>>>> Adding changes

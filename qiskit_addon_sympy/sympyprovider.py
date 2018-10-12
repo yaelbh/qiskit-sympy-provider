@@ -19,14 +19,7 @@ class SympyProvider(BaseProvider):
         super().__init__(args, kwargs)
 
         # Populate the list of local Sympy backends.
-<<<<<<< HEAD:qiskit/backends/sympy/sympyprovider.py
-        statevector_simulator = SympyStatevectorSimulator()
-        unitary_simulator = SympyUnitarySimulator()
-        self.backends = {statevector_simulator.name(): statevector_simulator,
-                         unitary_simulator.name(): unitary_simulator}
-=======
         self._backends = [SympyStatevectorSimulator(), SympyUnitarySimulator()]
->>>>>>> Adding changes:qiskit_addon_sympy/sympyprovider.py
 
     def get_backend(self, name):
         return super().get_backend(name=name)
