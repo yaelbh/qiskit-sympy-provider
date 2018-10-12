@@ -23,7 +23,7 @@ We recommend to follow the [usage example](examples/sympy_statevector.py). More 
 
 The Qiskit Sympy Provider was originally authored by Peng Liu and Marco Pistoia.
 
-And continues to grow with the help and work of many people who contribute to the project at different levels.
+And continues to grow with the help and work of [many people](https://github.com/Qiskit/qiskit-sympy-provider/graphs/contributors) who contribute to the project at different levels.
 
 ## License
 
