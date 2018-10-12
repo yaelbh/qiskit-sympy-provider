@@ -12,6 +12,7 @@ from qiskit.backends.providerutils import filter_backends
 from .statevector_simulator import SympyStatevectorSimulator
 from .unitary_simulator import SympyUnitarySimulator
 
+
 class SympyProvider(BaseProvider):
     """Provider for local Sympy backends."""
 

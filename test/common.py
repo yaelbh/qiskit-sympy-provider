@@ -60,7 +60,6 @@ class QiskitSympyTestCase(unittest.TestCase):
                                              logging.INFO)
             cls.log.setLevel(level)
 
-
     @staticmethod
     def _get_resource_path(filename, path=Path.TEST):
         """ Get the absolute path to a resource.

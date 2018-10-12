@@ -181,7 +181,7 @@ class SympyUnitarySimulator(BaseBackend):
         sym_job.submit()
         return sym_job
 
-    def  _run_job(self, job_id, qobj):
+    def _run_job(self, job_id, qobj):
         """Run qobj
 
         Args:
