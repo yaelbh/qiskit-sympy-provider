@@ -54,12 +54,13 @@ from sympy.physics.quantum.qapply import qapply
 from sympy.physics.quantum.qubit import Qubit
 from sympy.physics.quantum.represent import represent
 
-from qiskit.result._utils import result_from_old_style_dict
 from qiskit.qobj import QobjItem
 from qiskit.backends import BaseBackend
-from qiskit.backends.aer.aerjob import AerJob
-from qiskit.backends.aer._simulatorerror import SimulatorError
-from qiskit.backends.aer._simulatortools import compute_ugate_matrix
+from qiskit.result._utils import result_from_old_style_dict
+
+from .simulatortools import compute_ugate_matrix
+from .sympysimulatorerror import SympySimulatorError
+from .sympyjob import SympyJob
 
 logger = logging.getLogger(__name__)
 
@@ -162,7 +163,7 @@ class SympyStatevectorSimulator(BaseBackend):
             LocalJob: derived from BaseJob
         """
         job_id = str(uuid.uuid4())
-        sym_job = AerJob(self, job_id, self._run_job, qobj)
+        sym_job = SympyJob(self, job_id, self._run_job, qobj)
         sym_job.submit()
         return sym_job
 
@@ -217,7 +218,7 @@ class SympyStatevectorSimulator(BaseBackend):
                 }
 
         Raises:
-            SimulatorError: if an error occurred.
+            SympySimulatorError: if an error occurred.
         """
         self._number_of_qubits = circuit.header.number_of_qubits
         self._statevector = 0
@@ -225,11 +226,12 @@ class SympyStatevectorSimulator(BaseBackend):
         self._statevector = Qubit(*tuple([0]*self._number_of_qubits))
         for operation in circuit.instructions:
             if getattr(operation, 'conditional', None):
-                raise SimulatorError('conditional operations not supported '
-                                     'in statevector simulator')
+                raise SympySimulatorError('conditional operations not supported '
+                                          'in statevector simulator')
             if operation.name in ('measure', 'reset'):
-                raise SimulatorError('operation {} not supported by '
-                                     'sympy statevector simulator.'.format(operation.name))
+                raise SympySimulatorError(
+                    'operation {} not supported by sympy statevector simulator.'.format(
+                        operation.name))
             if operation.name in ('U', 'u1', 'u2', 'u3'):
                 qubit = operation.qubits[0]
                 opname = operation.name.upper()
@@ -252,7 +254,7 @@ class SympyStatevectorSimulator(BaseBackend):
             else:
                 backend = self.name
                 err_msg = '{0} encountered unrecognized operation "{1}"'
-                raise SimulatorError(err_msg.format(backend, operation.name))
+                raise SympySimulatorError(err_msg.format(backend, operation.name))
 
         matrix_form = represent(self._statevector)
         shape_n = matrix_form.shape[0]
@@ -279,7 +281,7 @@ class SympyStatevectorSimulator(BaseBackend):
         Returns:
             object: (the sympy representation of) the gate being applied to the qubits
         Raises:
-            Exception: if an unsupported operation is seen
+            SympySimulatorError: if an unsupported operation is seen
         """
         the_gate = None
         if name == 'ID':
@@ -324,7 +326,7 @@ class SympyStatevectorSimulator(BaseBackend):
             elif len(parameters) == 3:  # [theta, phi, lambda]
                 pass
             else:
-                raise Exception('U gate must carry 1, 2 or 3 parameters!')
+                raise SympySimulatorError('U gate must carry 1, 2 or 3 parameters!')
 
             if name.startswith('U'):
                 ugate = UGateGeneric(*qid_tuple)
@@ -338,7 +340,7 @@ class SympyStatevectorSimulator(BaseBackend):
                 ugate.set_target_matrix(u_matrix=u_mat)
                 return CGate(qid_tuple[0], ugate)
         # if the control flow comes here,  alarm!
-        raise Exception('Not supported')
+        raise SympySimulatorError('Not supported')
 
     # TODO: Remove duplication between files in statevector_simulator_*.py:
     #       methods _validate and _set_shots_to_1
@@ -353,14 +355,14 @@ class SympyStatevectorSimulator(BaseBackend):
             qobj (Qobj): Qobj structure.
 
         Raises:
-            SimulatorError: if unsupported operations passed
+            SympySimulatorError: if unsupported operations passed
         """
         self._set_shots_to_1(qobj, False)
         for circuit in qobj.experiments:
             self._set_shots_to_1(circuit, True)
             for operator in circuit.instructions:
                 if operator.name in ('measure', 'reset'):
-                    raise SimulatorError(
+                    raise SympySimulatorError(
                         "In circuit {}: statevector simulator does not support measure or "
                         "reset.".format(circuit.header.name))
 

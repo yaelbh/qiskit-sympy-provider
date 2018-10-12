@@ -31,10 +31,11 @@ from sympy.matrices import eye, zeros
 from sympy.physics.quantum import TensorProduct
 
 from qiskit.backends import BaseBackend
-from qiskit.backends.aer.aerjob import AerJob
-from qiskit.backends.aer._simulatortools import compute_ugate_matrix, index2
-from qiskit.backends.aer._simulatorerror import SimulatorError
 from qiskit.result._utils import result_from_old_style_dict
+
+from .simulatortools import compute_ugate_matrix, index2
+from .sympyjob import SympyJob
+from .sympysimulatorerror import SympySimulatorError
 
 
 logger = logging.getLogger(__name__)
@@ -178,7 +179,7 @@ class SympyUnitarySimulator(BaseBackend):
             AerJob: derived from BaseJob
         """
         job_id = str(uuid.uuid4())
-        sym_job = AerJob(self, job_id, self._run_job, qobj)
+        sym_job = SympyJob(self, job_id, self._run_job, qobj)
         sym_job.submit()
         return sym_job
 
@@ -234,7 +235,7 @@ class SympyUnitarySimulator(BaseBackend):
                 'status': 'DONE'}
 
         Raises:
-            SimulatorError: if unsupported operations passed
+            SympySimulatorError: if unsupported operations passed
         """
         self._number_of_qubits = circuit.header.number_of_qubits
         result = {
@@ -243,10 +244,12 @@ class SympyUnitarySimulator(BaseBackend):
         self._unitary_state = eye(2 ** self._number_of_qubits)
         for operation in circuit.instructions:
             if getattr(operation, 'conditional', None):
-                raise SimulatorError('conditional operations not supported in unitary simulator')
+                raise SympySimulatorError(
+                    'conditional operations not supported in unitary simulator')
             if operation.name in ('measure', 'reset'):
-                raise SimulatorError('operation {} not supported by '
-                                     'sympy unitary simulator.'.format(operation.name))
+                raise SympySimulatorError(
+                    'operation {} not supported by sympy unitary simulator.'.format(
+                        operation.name))
             if operation.name in ('U', 'u1', 'u2', 'u3'):
                 params = getattr(operation, 'params', None)
                 qubit = operation.qubits[0]
