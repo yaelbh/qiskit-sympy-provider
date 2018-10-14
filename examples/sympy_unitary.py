@@ -6,7 +6,7 @@
 # the LICENSE.txt file in the root directory of this source tree.
 
 """
-Example used in the README. In this example a Bell state is made.
+In this example a Bell state is made.
 """
 
 # Import the Qiskit

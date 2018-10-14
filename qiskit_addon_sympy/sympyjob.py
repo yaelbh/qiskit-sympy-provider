@@ -112,6 +112,8 @@ class SympyJob(BaseJob):
             _status = JobStatus.CANCELLED
         elif self._future.done():
             _status = JobStatus.DONE if self._future.exception() is None else JobStatus.ERROR
+        elif self._future._state == 'PENDING':
+            _status = JobStatus.QUEUED
         else:
             raise JobError('Unexpected behavior of {0}'.format(
                 self.__class__.__name__))
