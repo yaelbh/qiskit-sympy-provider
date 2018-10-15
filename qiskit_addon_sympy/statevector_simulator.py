@@ -54,7 +54,6 @@ from sympy.physics.quantum.qapply import qapply
 from sympy.physics.quantum.qubit import Qubit
 from sympy.physics.quantum.represent import represent
 
-from qiskit.qobj import QobjItem
 from qiskit.backends import BaseBackend
 from qiskit.result._utils import result_from_old_style_dict
 
@@ -269,7 +268,7 @@ class SympyStatevectorSimulator(BaseBackend):
                 'data': data,
                 'status': 'DONE',
                 'success': True,
-                'shots': circuit.config.shots}
+                'shots': 1}
 
     @staticmethod
     def get_sym_op(name, qid_tuple, params=None):
@@ -342,47 +341,20 @@ class SympyStatevectorSimulator(BaseBackend):
         # if the control flow comes here,  alarm!
         raise SympySimulatorError('Not supported')
 
-    # TODO: Remove duplication between files in statevector_simulator_*.py:
-    #       methods _validate and _set_shots_to_1
+    # TODO: Remove duplication of _validate between files in statevector_simulator_*.py:
     def _validate(self, qobj):
         """Semantic validations of the qobj which cannot be done via schemas.
         Some of these may later move to backend schemas.
-
-        1. No shots
-        2. No measurements in the middle
 
         Args:
             qobj (Qobj): Qobj structure.
 
         Raises:
-            SympySimulatorError: if unsupported operations passed
+            SympySimulatorError: if unsupported operations passed, these are measure and reset
         """
-        self._set_shots_to_1(qobj, False)
         for circuit in qobj.experiments:
-            self._set_shots_to_1(circuit, True)
             for operator in circuit.instructions:
                 if operator.name in ('measure', 'reset'):
                     raise SympySimulatorError(
                         "In circuit {}: statevector simulator does not support measure or "
                         "reset.".format(circuit.header.name))
-
-    def _set_shots_to_1(self, qobj_item, include_name):
-        """Set the number of shots to 1.
-
-        Args:
-            qobj_item (QobjItem): QobjItem structure
-            include_name (bool): include the name of the item in the log entry
-        """
-        if not getattr(qobj_item, 'config', None):
-            qobj_item.config = QobjItem(shots=1)
-
-        if getattr(qobj_item.config, 'shots', None) != 1:
-            warn = 'statevector simulator only supports 1 shot. Setting shots=1'
-            if include_name:
-                try:
-                    warn += 'Setting shots=1 for circuit' + qobj_item.header.name
-                except AttributeError:
-                    pass
-            warn += '.'
-            logger.info(warn)
-        qobj_item.config.shots = 1
