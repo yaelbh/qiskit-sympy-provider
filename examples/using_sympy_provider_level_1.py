@@ -71,7 +71,7 @@ unitary_result = unitary_job.result()
 print("Stevector simulator: ", statevector_result)
 print(statevector_result.get_statevector(qc1))
 print(statevector_result.get_statevector(qc2))
-print("Unitary simulator: ", statevector_result)
+print("Unitary simulator: ", unitary_result)
 print(unitary_result.get_unitary(qc1))
 print(unitary_result.get_unitary(qc2))
 
