@@ -15,7 +15,7 @@ In particular, it simulates the quantum computation with the sympy APIs,
 which preserve the symbolic form of numbers, e.g., sqrt(2), e^{i*pi/2}.
 
 How to use this simulator:
-see examples/sympy_backends.py
+see examples/using_sympy_provider_level_0.py
 
 Example output:
 final quantum amplitude vector: [sqrt(2)/2 0 0 sqrt(2)/2]
@@ -40,7 +40,6 @@ This is due to the limit of classical computers and show the advantage of the qu
 Warning: it is slow.
 Warning: this simulator computes the final amplitude vector precisely within a single shot.
 Therefore we do not need multiple shots.
-If you specify multiple shots, it will automatically set shots=1.
 """
 
 import logging
