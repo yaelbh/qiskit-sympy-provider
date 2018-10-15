@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/Qiskit/qiskit-addon-sympy.svg?branch=master)](https://travis-ci.com/Qiskit/qiskit-addon-sympy)
+[![Build Status](https://travis-ci.com/Qiskit/qiskit-sympy-provider.svg?branch=master)](https://travis-ci.com/Qiskit/qiskit-sympy-provider)
 
 # Qiskit Sympy Provider
 
