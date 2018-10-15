@@ -12,7 +12,7 @@ In particular, it simulates the quantum computation with the sympy APIs,
 which preserve the symbolic form of numbers, e.g., sqrt(2), e^{i*pi/2}.
 
 How to use this simulator:
-see examples/sympy_backends.py
+see examples/using_sympy_provider_level_0.py
 
 Example output:
 [[sqrt(2)/2 sqrt(2)/2 0 0]
