@@ -13,7 +13,7 @@ from qiskit import QISKitError
 
 
 class SympySimulatorError(QISKitError):
-    """Base class for errors raised by simulators."""
+    """Class for errors raised by the Sympy simulators."""
 
     def __init__(self, *message):
         """Set the error message."""

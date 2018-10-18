@@ -173,10 +173,10 @@ class SympyUnitarySimulator(BaseBackend):
         """Run qobj asynchronously.
 
         Args:
-            qobj (dict): job description
+            qobj (QObj): QObj structure
 
         Returns:
-            AerJob: derived from BaseJob
+            SympyJob: derived from BaseJob
         """
         job_id = str(uuid.uuid4())
         sym_job = SympyJob(self, job_id, self._run_job, qobj)
@@ -192,7 +192,7 @@ class SympyUnitarySimulator(BaseBackend):
 
         Returns:
             Result: Result is a class including the information to be returned to users.
-            Specifically, result_list in the return looks is important and it like this::
+            Specifically, result_list in the return looks is important and it like this:
 
                 [
                     {'data': {'unitary':

@@ -155,10 +155,10 @@ class SympyStatevectorSimulator(BaseBackend):
         """Run qobj asynchronously.
 
         Args:
-            qobj (dict): job description
+            qobj (QObj): QObj structure
 
         Returns:
-            LocalJob: derived from BaseJob
+            SympyJob: derived from BaseJob
         """
         job_id = str(uuid.uuid4())
         sym_job = SympyJob(self, job_id, self._run_job, qobj)
@@ -207,7 +207,7 @@ class SympyStatevectorSimulator(BaseBackend):
         Args:
             circuit (QobjExperiment): Qobj experiment
         Returns:
-            dict: A dictionary of results which looks something like::
+            dict: A dictionary of results which looks something like:
 
                 {
                 "data":{
