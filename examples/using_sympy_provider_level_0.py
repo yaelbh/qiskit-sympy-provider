@@ -12,8 +12,6 @@ This example shows the most basic way to user the Sympy Provider. It builds some
 and runs them on both the statevector and unitary simulators.
 """
 
-import time
-
 # Import the Qiskit modules
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit import execute

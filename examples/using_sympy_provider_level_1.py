@@ -15,7 +15,7 @@ user responsibility to make sure it can be run. This is useful when you want to 
 circuits on different backends or change the compile parameters.
 """
 
-import pprint, time
+import time
 
 # Import the Qiskit modules
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
