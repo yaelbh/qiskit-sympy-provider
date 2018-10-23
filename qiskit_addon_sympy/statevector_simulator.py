@@ -54,8 +54,10 @@ from sympy.physics.quantum.qubit import Qubit
 from sympy.physics.quantum.represent import represent
 
 from qiskit.backends import BaseBackend
-from qiskit.result._utils import result_from_old_style_dict
+from qiskit.qobj import Result as QobjResult, ExperimentResult
+from qiskit.result import Result
 
+from . import __version__
 from .simulatortools import compute_ugate_matrix
 from .sympysimulatorerror import SympySimulatorError
 from .sympyjob import SympyJob
@@ -173,7 +175,7 @@ class SympyStatevectorSimulator(BaseBackend):
                 job_id (str): A job id
 
             Returns:
-                Result: Result is a class including the information to be returned to users.
+                qiskit.Result: Result is a class including the information to be returned to users.
                     Specifically, result_list in the return contains the essential information,
                     which looks like this::
 
@@ -190,16 +192,20 @@ class SympyStatevectorSimulator(BaseBackend):
         for circuit in qobj.experiments:
             result_list.append(self.run_circuit(circuit))
         end = time.time()
-        result = {'backend': self.name,
-                  'id': qobj.qobj_id,
+
+        # Build a schema-conformant container of the results.
+        result = {'backend_name': self.name(),
+                  'backend_version': __version__,
+                  'qobj_id': qobj.qobj_id,
                   'job_id': job_id,
-                  'result': result_list,
+                  'results': result_list,
                   'status': 'COMPLETED',
                   'success': True,
                   'time_taken': (end - start)}
-        return result_from_old_style_dict(
-            result,
-            [circuit.header.name for circuit in qobj.experiments])
+        qobj_result = QobjResult(**result)
+
+        # Return a qiskit.Result object.
+        return Result(qobj_result)
 
     def run_circuit(self, circuit):
         """Run a circuit and return object.
@@ -207,7 +213,7 @@ class SympyStatevectorSimulator(BaseBackend):
         Args:
             circuit (QobjExperiment): Qobj experiment
         Returns:
-            dict: A dictionary of results which looks something like:
+            ExperimentResult: Container for a single experiment::
 
                 {
                 "data":{
@@ -258,16 +264,16 @@ class SympyStatevectorSimulator(BaseBackend):
         shape_n = matrix_form.shape[0]
         list_form = [matrix_form[i, 0] for i in range(shape_n)]
 
-        # Return the results
-        data = {
-            'statevector': np.asarray(list_form),
+        # Build a schema-conformant container of the Experiment results.
+        result = {
+            'data': {'statevector': np.asarray(list_form)},
+            'success': True,
+            'shots': 1,
+            'status': 'DONE',
+            'header': {'name': circuit.header.name}
         }
 
-        return {'name': circuit.header.name,
-                'data': data,
-                'status': 'DONE',
-                'success': True,
-                'shots': 1}
+        return ExperimentResult(**result)
 
     @staticmethod
     def get_sym_op(name, qid_tuple, params=None):

@@ -7,8 +7,8 @@
 
 """Local Sympy Backends."""
 
+__version__ = '0.1.0'
+
 from .statevector_simulator import SympyStatevectorSimulator
 from .unitary_simulator import SympyUnitarySimulator
 from .sympyprovider import SympyProvider
-
-__version__ = '0.1.0'

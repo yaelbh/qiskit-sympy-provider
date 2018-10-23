@@ -31,8 +31,10 @@ from sympy.matrices import eye, zeros
 from sympy.physics.quantum import TensorProduct
 
 from qiskit.backends import BaseBackend
-from qiskit.result._utils import result_from_old_style_dict
+from qiskit.qobj import Result as QobjResult, ExperimentResult
+from qiskit.result import Result
 
+from . import __version__
 from .simulatortools import compute_ugate_matrix, index2
 from .sympyjob import SympyJob
 from .sympysimulatorerror import SympySimulatorError
@@ -191,7 +193,7 @@ class SympyUnitarySimulator(BaseBackend):
             job_id (str): a id for the job
 
         Returns:
-            Result: Result is a class including the information to be returned to users.
+            qiskit.Result: Result is a class including the information to be returned to users.
             Specifically, result_list in the return looks is important and it like this:
 
                 [
@@ -200,7 +202,7 @@ class SympyUnitarySimulator(BaseBackend):
                               [0, 0, sqrt(2)/2, -sqrt(2)/2],
                               [0, 0, sqrt(2)/2, sqrt(2)/2],
                               [sqrt(2)/2, -sqrt(2)/2, 0, 0]], dtype=object)},
-                    'status': 'DONE'}
+                    ...}
                 ]
         """
         result_list = []
@@ -208,16 +210,20 @@ class SympyUnitarySimulator(BaseBackend):
         for circuit in qobj.experiments:
             result_list.append(self.run_circuit(circuit))
         end = time.time()
-        result = {'backend': self.name,
-                  'id': qobj.qobj_id,
+
+        # Build a schema-conformant container of the results.
+        result = {'backend_name': self.name(),
+                  'backend_version': __version__,
+                  'qobj_id': qobj.qobj_id,
                   'job_id': job_id,
-                  'result': result_list,
+                  'results': result_list,
                   'status': 'COMPLETED',
                   'success': True,
                   'time_taken': (end - start)}
-        return result_from_old_style_dict(
-            result,
-            [circuit.header.name for circuit in qobj.experiments])
+        qobj_result = QobjResult(**result)
+
+        # Return a qiskit.Result object.
+        return Result(qobj_result)
 
     def run_circuit(self, circuit):
         """Run a circuit and return the results.
@@ -225,7 +231,8 @@ class SympyUnitarySimulator(BaseBackend):
             circuit (QobjExperiment): Qobj experiment
 
         Returns:
-            dict: A dictionary of results which looks something like::
+            ExperimentResult: Container for a single experiment
+            results which looks something like::
 
                 {'data': {'unitary': array([[sqrt(2)/2, sqrt(2)/2, 0, 0],
                                             [0, 0, sqrt(2)/2, -sqrt(2)/2],
@@ -267,10 +274,14 @@ class SympyUnitarySimulator(BaseBackend):
             else:
                 result['status'] = 'ERROR'
                 return result
-        result['data']['unitary'] = np.array(self._unitary_state)
-        result['status'] = 'DONE'
-        result['name'] = circuit.header.name
-        result['success'] = True
-        result['shots'] = 1
 
-        return result
+        # Build a schema-conformant container of the Experiment results.
+        result = {
+            'data': {'unitary': np.array(self._unitary_state)},
+            'success': True,
+            'shots': 1,
+            'status': 'DONE',
+            'header': {'name': circuit.header.name}
+        }
+
+        return ExperimentResult(**result)
